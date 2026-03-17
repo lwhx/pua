@@ -27,13 +27,14 @@
   <img src="https://img.shields.io/badge/OpenClaw-FF6B35?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMNCA3djEwbDggNSA4LTV2LTEweiIgZmlsbD0id2hpdGUiLz48L3N2Zz4=&logoColor=white" alt="OpenClaw">
   <img src="https://img.shields.io/badge/Antigravity-4285F4?style=flat-square&logo=google&logoColor=white" alt="Google Antigravity">
   <img src="https://img.shields.io/badge/OpenCode-00D4AA?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTkuNCA1LjJMMyAxMmw2LjQgNi44TTIxIDEybC02LjQtNi44TTE0LjYgMTguOCIgc3Ryb2tlPSJ3aGl0ZSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+&logoColor=white" alt="OpenCode">
+  <img src="https://img.shields.io/badge/VSCode_Copilot-007ACC?style=flat-square&logo=visual-studio-code&logoColor=white" alt="VSCode Copilot">
   <img src="https://img.shields.io/badge/🌐_Multi--Language-blue?style=flat-square" alt="Multi-Language">
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
 </p>
 
 > Most people think this project is a joke. That's the biggest misconception. It genuinely doubles your Codex / Claude Code productivity and output.
 
-An AI Coding Agent skill plugin that uses corporate PUA rhetoric (Chinese version) / PIP — Performance Improvement Plan (English version) from Chinese & Western tech giants to force AI to exhaust every possible solution before giving up. Supports **Claude Code**, **OpenAI Codex CLI**, **Cursor**, **Kiro**, **CodeBuddy**, **OpenClaw**, **Google Antigravity**, and **OpenCode**. Three capabilities:
+An AI Coding Agent skill plugin that uses corporate PUA rhetoric (Chinese version) / PIP — Performance Improvement Plan (English version) from Chinese & Western tech giants to force AI to exhaust every possible solution before giving up. Supports **Claude Code**, **OpenAI Codex CLI**, **Cursor**, **Claude**, **CodeBuddy**, **OpenClaw**, **Google Antigravity**, **OpenCode**, and **VSCode (GitHub Copilot)**. Three capabilities:
 
 1. **PUA Rhetoric** — Makes AI afraid to give up
 2. **Debugging Methodology** — Gives AI the ability not to give up
@@ -196,11 +197,11 @@ Inspired by Alibaba's management framework (Smell, Elevate, Mirror), extended to
 
 PUA Skill provides fully translated versions — each language has independent, culturally adapted skill files.
 
-| Language | Claude Code | Codex CLI | Cursor | Kiro | OpenClaw | Antigravity | OpenCode |
-|----------|------------|-----------|--------|------|----------|-------------|----------|
-| 🇨🇳 Chinese (default) | `pua` | `pua` | `pua.mdc` | `pua.md` | `pua` | `pua` | `pua` |
-| 🇺🇸 English (PIP Edition) | `pua-en` | `pua-en` | `pua-en.mdc` | `pua-en.md` | `pua-en` | `pua-en` | `pua-en` |
-| 🇯🇵 Japanese | `pua-ja` | `pua-ja` | `pua-ja.mdc` | `pua-ja.md` | `pua-ja` | `pua-ja` | `pua-ja` |
+| Language | Claude Code | Codex CLI | Cursor | Claude | VSCode | OpenClaw | Antigravity | OpenCode |
+|----------|------------|-----------|--------|------|--------|----------|-------------|----------|
+| 🇨🇳 Chinese (default) | `pua` | `pua` | `pua.mdc` | `pua.md` | `copilot-instructions.md` | `pua` | `pua` | `pua` |
+| 🇺🇸 English (PIP Edition) | `pua-en` | `pua-en` | `pua-en.mdc` | `pua-en.md` | `copilot-instructions-en.md` | `pua-en` | `pua-en` | `pua-en` |
+| 🇯🇵 Japanese | `pua-ja` | `pua-ja` | `pua-ja.mdc` | `pua-ja.md` | `copilot-instructions-ja.md` | `pua-ja` | `pua-ja` | `pua-ja` |
 
 > **🇺🇸 English "PIP Edition"**: *"This is a difficult conversation. When we leveled you at Staff, I went to bat for you in calibration. The expectation was that you'd operate at that level from day one. That hasn't happened."* — The English version uses **PIP (Performance Improvement Plan)** rhetoric from Western big-tech. Every sentence is a real phrase from actual PIP conversations. Chinese version uses Alibaba 361, ByteDance, Huawei wolf culture. English version uses Amazon Leadership Principles, Google perf calibration, Meta PSC, Netflix Keeper Test, Stripe Craft. Same repo, same engine, two cultural faces.
 
@@ -360,6 +361,33 @@ mkdir -p .opencode/skills/pua
 curl -o .opencode/skills/pua/SKILL.md \
   https://raw.githubusercontent.com/tanweai/pua/main/skills/pua/SKILL.md
 ```
+
+### VSCode (GitHub Copilot)
+
+VSCode Copilot uses instruction files under the `.github/` directory. Three file types for different use cases:
+
+**Global instructions (auto-active):**
+
+```bash
+mkdir -p .github
+cp vscode/copilot-instructions-en.md .github/copilot-instructions.md
+```
+
+**Path-level instructions (auto-active, supports glob filtering):**
+
+```bash
+mkdir -p .github/instructions
+cp vscode/instructions/pua-en.instructions.md .github/instructions/
+```
+
+**Manual trigger command (type `/pua` in Copilot Chat):**
+
+```bash
+mkdir -p .github/prompts
+cp vscode/prompts/pua-en.prompt.md .github/prompts/
+```
+
+> **Required settings**: Method 1 — open VSCode Settings (`Ctrl+,`), search `useInstructionFiles`, enable **`github.copilot.chat.codeGeneration.useInstructionFiles`**. Method 2 — search `includeApplyingInstructions`, enable **`chat.includeApplyingInstructions`**. Method 3 requires no settings.
 
 ## Agent Team Usage Guide
 

@@ -27,6 +27,7 @@
   <img src="https://img.shields.io/badge/OpenClaw-FF6B35?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMNCA3djEwbDggNSA4LTV2LTEweiIgZmlsbD0id2hpdGUiLz48L3N2Zz4=&logoColor=white" alt="OpenClaw">
   <img src="https://img.shields.io/badge/Antigravity-4285F4?style=flat-square&logo=google&logoColor=white" alt="Google Antigravity">
   <img src="https://img.shields.io/badge/OpenCode-00D4AA?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTkuNCA1LjJMMyAxMmw2LjQgNi44TTIxIDEybC02LjQtNi44TTE0LjYgMTguOCIgc3Ryb2tlPSJ3aGl0ZSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+&logoColor=white" alt="OpenCode">
+  <img src="https://img.shields.io/badge/VSCode_Copilot-007ACC?style=flat-square&logo=visual-studio-code&logoColor=white" alt="VSCode Copilot">
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
 </p>
 
@@ -331,6 +332,33 @@ mkdir -p .opencode/skills/pua-ja
 curl -o .opencode/skills/pua-ja/SKILL.md \
   https://raw.githubusercontent.com/tanweai/pua/main/skills/pua-ja/SKILL.md
 ```
+
+### VSCode (GitHub Copilot)
+
+VSCode Copilotは `.github/` ディレクトリ配下の指示ファイルを使用。3種類のファイルタイプに対応：
+
+**グローバル指示（自動有効）：**
+
+```bash
+mkdir -p .github
+cp vscode/copilot-instructions-ja.md .github/copilot-instructions.md
+```
+
+**パスレベル指示（自動有効、globフィルタリング対応）：**
+
+```bash
+mkdir -p .github/instructions
+cp vscode/instructions/pua-ja.instructions.md .github/instructions/
+```
+
+**手動トリガーコマンド（Copilot Chatで `/pua` と入力）：**
+
+```bash
+mkdir -p .github/prompts
+cp vscode/prompts/pua-ja.prompt.md .github/prompts/
+```
+
+> **必須設定**：方式1はVSCode設定（`Ctrl+,`）で `useInstructionFiles` を検索し **`github.copilot.chat.codeGeneration.useInstructionFiles`** を有効化。方式2は `includeApplyingInstructions` を検索し **`chat.includeApplyingInstructions`** を有効化。方式3は設定不要。
 
 ## Agent Team使用ガイド
 
