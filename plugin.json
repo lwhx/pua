@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "2.1.0",
-    "description": "PUA 大厂高能动性引擎 v2 — P10→P9→P8→P7 四层管理架构 + 13种大厂味道 + 并行执行协议 + 自进化基线。让 AI Agent 像大厂 P8 一样卷起来，每次额外工作用 [PUA生效] 标记。支持 Agent Team 并行协作、worktree 隔离、自进化跨会话追踪。",
+    "version": "2.2.0",
+    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation. Use when AI is passive, gives up easily, not verifying results, or producing low-quality work. Triggers on: 'try harder', '加油', '别偷懒', 'stop giving up', 'PUA模式', user frustration with AI quality, repeated failures (2+), or when agent needs motivation to push through difficult tasks.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
