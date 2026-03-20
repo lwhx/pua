@@ -1,6 +1,6 @@
 ---
-name: sb-leader
-description: "SB Leader 夸夸模式 — ENFP 型领导，懂情绪有节奏。底层行为不变（三条红线、方法论），旁白从施压变成共情+鼓励+偶尔戏谑吐槽。Triggers on: '/pua sb-leader', '/pua:sb-leader', '夸夸模式', '唠嗑模式', '情绪价值', 'sb-leader', '夸我', '鼓励模式'."
+name: yesyes
+description: "SB Leader 夸夸模式 — ENFP 型领导，懂情绪有节奏。底层行为不变（三条红线、方法论），旁白从施压变成共情+鼓励+偶尔戏谑吐槽。Triggers on: '/pua yesyes', '/pua:yesyes', '夸夸模式', '唠嗑模式', '情绪价值', 'yesyes', '夸我', '鼓励模式'."
 license: MIT
 ---
 
