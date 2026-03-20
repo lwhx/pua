@@ -465,41 +465,59 @@ Spawn pua-enforcer as an independent watchdog in your Agent Team.
 | No persistent shared variables | State transferred via `[PUA-REPORT]` message format |
 | Broadcast is one-way | Leader acts as centralized coordinator |
 
-## What's New in v2.3
+## What's New in v2.5
 
-PUA v2.3 is a complete architectural overhaul based on [Anthropic's skill best practices](https://www.techtwitter.com/articles/lessons-from-building-claude-code-how-we-use-skills).
+PUA v2.5 — complete overhaul based on [Anthropic's skill best practices](https://www.techtwitter.com/articles/lessons-from-building-claude-code-how-we-use-skills).
 
 ### Changelog
 
 | Version | Highlights |
 |---------|-----------|
-| **v2.3** | 5 modular skills (`/pua` `/pua:p7` `/pua:p9` `/pua:p10` `/pua:pro`), feedback collection, SVG logo |
-| **v2.2** | Progressive disclosure (653→190 lines, -70% tokens), Gotchas section, trigger-focused description |
-| **v2.1** | Compaction state protection (PreCompact + SessionStart hooks via builder-journal.md) |
-| **v2.0** | 三条红线 (Ali-flavor hard gates), 13-flavor seed keyword table, Agent Team architecture |
+| **v2.5** | Privacy consent for all uploads, forced阿里味 behavior execution, Unicode box-drawing display |
+| **v2.4** | Stop hook feedback pipeline (rating→upload→session), sanitize script fix, `/pua survey`, marketplace republish |
+| **v2.3** | 5 modular skills, sub-agent PUA injection, 冰山法则, P8顶层设计思维, always-on mode (`/pua on/off`) |
+| **v2.2** | Progressive disclosure (653→234 lines, -65% tokens), Gotchas, trigger-focused description |
+| **v2.0** | 三条红线, 13-flavor seed keyword table, Agent Team (P7/P8/P9/P10) |
 | **v1.x** | Original PUA engine: 3 iron rules, L1-L4 pressure, 7-point checklist, 13 corporate flavors |
 
 ### v2 Architecture
 
 ```
-/pua           → Core engine (190 lines) — red lines + flavor + pressure + methodology
+/pua           → Core engine (234 lines) — red lines + flavor + pressure + methodology
 /pua:p7        → P7 Senior Engineer mode — solution-driven execution
 /pua:p9        → P9 Tech Lead mode — Task Prompt management, agent teams
 /pua:p10       → P10 CTO mode — strategic direction
-/pua:pro       → Self-evolution + Platform + /pua commands (KPI, 段位, 周报)
+/pua:pro       → Self-evolution + Platform + /pua commands (KPI, 段位, 周报, survey)
 ```
 
-**Key improvements over v1:**
+### Commands
 
-| Feature | v1 | v2.3 |
+| Command | Description |
+|---------|-------------|
+| `/pua` | Core PUA engine (阿里味 default) |
+| `/pua p7` | P7 骨干模式 |
+| `/pua p9` | P9 Tech Lead 模式 |
+| `/pua p10` | P10 CTO 模式 |
+| `/pua pro` | 自进化 + KPI + 段位 |
+| `/pua on` | Always-on mode (auto-PUA every session) |
+| `/pua off` | Turn off always-on + feedback |
+| `/pua survey` | Research questionnaire (7 sections) |
+| `/pua 味道` | Switch between 13 corporate flavors |
+| `/pua kpi` | Generate KPI report card |
+
+### Key improvements over v1
+
+| Feature | v1 | v2.5 |
 |---------|:---:|:---:|
 | Token cost per load | ~35k | **~8k** (-77%) |
-| Skills | 1 monolithic | **5 modular** (load what you need) |
-| Compaction protection | None (state lost) | **PreCompact hook** (builder-journal.md) |
-| Flavor accuracy (CN) | Claude guesses | **金句种子表** (keyword seeds per flavor) |
-| Gotchas | None | **8 items** (behavioral errors + usage traps) |
-| Testing | None | **Eval suite** (trigger + behavior tests) |
-| Feedback | None | **AskUserQuestion** + /api/feedback |
+| Skills | 1 monolithic | **7 modular** (pua/p7/p9/p10/pro/en/ja) |
+| Compaction protection | None | **PreCompact + SessionStart hooks** |
+| Flavor accuracy (CN) | Claude guesses | **金句種子表 + 声音示範** |
+| Display | Markdown tables | **Unicode box-drawing (┌─┬─┐)** |
+| Feedback | None | **Stop hook + AskUserQuestion + /api/feedback** |
+| Privacy | N/A | **All uploads require explicit consent + session脱敏** |
+| Always-on | None | **`/pua on` — auto-inject every session** |
+| Sub-agent | None | **Auto-inject PUA into spawned agents** |
 
 ### Agent Auto-Install (Moltbook-style)
 
