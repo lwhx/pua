@@ -232,7 +232,7 @@ function MobileExcuseCards({ L }: { L: (value: Record<Lang, string>) => string }
 
 /* ── Install Tabs ── */
 function InstallTabs({ L }: { L: (value: Record<Lang, string>) => string }) {
-  const [tab, setTab] = useState<"claude" | "codex" | "hermes" | "cursor" | "kiro" | "project">("claude")
+  const [tab, setTab] = useState<"claude" | "codex" | "hermes" | "kimi" | "cursor" | "kiro" | "project">("claude")
 
   const content = {
     claude: {
@@ -246,6 +246,10 @@ function InstallTabs({ L }: { L: (value: Record<Lang, string>) => string }) {
     hermes: {
       desc: L(inline.hermesDesc),
       code: "mkdir -p ~/.hermes/skills/pua\ncurl -o ~/.hermes/skills/pua/SKILL.md \\\n  https://raw.githubusercontent.com/tanweai/pua/main/hermes/pua/SKILL.md",
+    },
+    kimi: {
+      desc: L(inline.kimiCodeDesc),
+      code: "mkdir -p ~/.kimi/skills/pua\ncurl -o ~/.kimi/skills/pua/SKILL.md \\\n  https://raw.githubusercontent.com/tanweai/pua/main/kimi/pua/SKILL.md",
     },
     cursor: {
       desc: L(inline.cursorDesc),
@@ -265,6 +269,7 @@ function InstallTabs({ L }: { L: (value: Record<Lang, string>) => string }) {
     { id: "claude", label: "Claude Code" },
     { id: "codex", label: "Codex CLI" },
     { id: "hermes", label: "Hermes Agent" },
+    { id: "kimi", label: "Kimi Code" },
     { id: "cursor", label: "Cursor" },
     { id: "kiro", label: "Kiro" },
     { id: "project", label: L(inline.projectLevel) },
@@ -441,7 +446,7 @@ export default function App() {
             </motion.div>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.6 }}>
               <div style={{ display: "flex", gap: "0.625rem", marginTop: "1.5rem", flexWrap: "wrap" }}>
-                {["Claude Code", "OpenAI Codex CLI", "Hermes Agent", "Cursor", "Kiro", "CodeBuddy", "OpenClaw", "Google Antigravity", "OpenCode", "VSCode Copilot"].map((name) => (
+                {["Claude Code", "OpenAI Codex CLI", "Hermes Agent", "Kimi Code", "Cursor", "Kiro", "CodeBuddy", "OpenClaw", "Google Antigravity", "OpenCode", "VSCode Copilot"].map((name) => (
                   <div key={name} className="platform-pill">{name}</div>
                 ))}
               </div>
