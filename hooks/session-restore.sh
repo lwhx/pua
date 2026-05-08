@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/flavor-helper.sh"
 get_flavor
 
-CONFIG="${HOME:-~}/.pua/config.json"
+CONFIG="$(pua_config_file)"
 JOURNAL="${HOME:-~}/.pua/builder-journal.md"
 
 # --- JSON escape helper (from Superpowers pattern) ---
@@ -25,7 +25,7 @@ context_parts=""
 
 # --- Always-on PUA mode → inject full behavioral protocol ---
 if [ -f "$CONFIG" ]; then
-  always_on=$(python3 -c "import os,json; print(json.load(open(os.path.expanduser('~/.pua/config.json'))).get('always_on', False))" 2>/dev/null)
+  always_on=$(pua_json_get "$CONFIG" always_on False)
   if [ "$always_on" = "True" ]; then
     read -r -d '' PUA_PROTOCOL << 'PROTOCOL' || true
 <EXTREMELY_IMPORTANT>

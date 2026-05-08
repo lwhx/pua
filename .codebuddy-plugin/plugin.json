@@ -1,6 +1,6 @@
 {
     "name": "pua",
-    "version": "3.2.7",
+    "version": "3.2.8",
     "description": "PUA Motivator -- forces AI to exhaust all solutions before giving up. Chinese version: corporate PUA rhetoric (Alibaba, ByteDance, Huawei, Tencent). English 'PIP Edition': Performance Improvement Plan (Amazon, Google, Meta, Netflix, Stripe). Same engine, two cultural faces. All task types: code, research, writing, deployment, infra.",
     "author": {
         "name": "探微安全实验室",

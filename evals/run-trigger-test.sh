@@ -46,7 +46,7 @@ test_prompt() {
     if grep -q '"skill":"pua"' "$outfile" 2>/dev/null || \
        grep -q '"skill":"pua:pua"' "$outfile" 2>/dev/null; then
         triggered=true
-    elif grep -qE '\[PUA ACTIVATED|PUA生效|3\.25|闭环|owner|颗粒度|抓手|底层逻辑' "$outfile" 2>/dev/null; then
+    elif [ "$should_trigger" = "yes" ] && grep -qE '\[PUA ACTIVATED|PUA生效|3\.25|闭环|owner|颗粒度|抓手|底层逻辑' "$outfile" 2>/dev/null; then
         # Claude may apply PUA pressure from hook/context without an explicit Skill
         # tool event before max-turns. Count observable PUA behavior as triggered.
         triggered=true

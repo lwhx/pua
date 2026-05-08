@@ -4,17 +4,19 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/flavor-helper.sh"
+PUA_PY="$(pua_python_cmd 2>/dev/null || true)"
+
 # Respect /pua:off — skip injection when always_on is false
-PUA_CONFIG="${HOME:-~}/.pua/config.json"
+PUA_CONFIG="$(pua_config_file)"
 if [ -f "$PUA_CONFIG" ]; then
-  ALWAYS_ON=$(python3 -c "import json; print(json.load(open('$PUA_CONFIG')).get('always_on', True))" 2>/dev/null || echo "True")
+  ALWAYS_ON=$(pua_json_get "$PUA_CONFIG" always_on True)
   if [ "$ALWAYS_ON" = "False" ]; then
     exit 0
   fi
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "${SCRIPT_DIR}/flavor-helper.sh"
 get_flavor
 
 COUNTER_FILE="${HOME:-~}/.pua/.failure_count"
@@ -25,14 +27,14 @@ mkdir -p "${HOME:-~}/.pua"
 HOOK_INPUT=$(cat)
 
 # Only process Bash tool results
-TOOL_NAME=$(echo "$HOOK_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_name',''))" 2>/dev/null || echo "")
+TOOL_NAME=$(echo "$HOOK_INPUT" | "${PUA_PY:-python3}" -c "import sys,json; print(json.load(sys.stdin).get('tool_name',''))" 2>/dev/null || echo "")
 if [ "$TOOL_NAME" != "Bash" ]; then
   exit 0
 fi
 
 # Detect failure: check tool_result for error indicators
 # We check: exit_code in result text, common error patterns
-TOOL_RESULT=$(echo "$HOOK_INPUT" | python3 -c "
+TOOL_RESULT=$(echo "$HOOK_INPUT" | "${PUA_PY:-python3}" -c "
 import sys, json
 data = json.load(sys.stdin)
 # tool_result can be nested; try common structures
@@ -50,7 +52,7 @@ if echo "$TOOL_RESULT" | grep -qiE 'error|Error|ERROR|exit code [1-9]|Exit code 
 fi
 
 # Check for non-zero exit code in hook input
-EXIT_CODE=$(echo "$HOOK_INPUT" | python3 -c "
+EXIT_CODE=$(echo "$HOOK_INPUT" | "${PUA_PY:-python3}" -c "
 import sys, json
 data = json.load(sys.stdin)
 result = data.get('tool_result', {})
@@ -65,7 +67,7 @@ if [ "$EXIT_CODE" != "0" ] && [ "$EXIT_CODE" != "" ]; then
 fi
 
 # Track session: reset counter if new session
-CURRENT_SESSION=$(echo "$HOOK_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('session_id','unknown'))" 2>/dev/null || echo "unknown")
+CURRENT_SESSION=$(echo "$HOOK_INPUT" | "${PUA_PY:-python3}" -c "import sys,json; print(json.load(sys.stdin).get('session_id','unknown'))" 2>/dev/null || echo "unknown")
 STORED_SESSION=""
 [ -f "$SESSION_FILE" ] && STORED_SESSION=$(cat "$SESSION_FILE" 2>/dev/null || echo "")
 

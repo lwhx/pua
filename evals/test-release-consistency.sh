@@ -80,6 +80,8 @@ if not (root / 'hooks/integrity-guard.sh').exists():
     errors.append('missing hooks/integrity-guard.sh')
 if not (root / 'evals/test-integrity-guard.sh').exists():
     errors.append('missing evals/test-integrity-guard.sh')
+if not (root / 'evals/test-windows-python-hooks.sh').exists():
+    errors.append('missing evals/test-windows-python-hooks.sh')
 if not (root / 'evals/test-agent-governance.sh').exists():
     errors.append('missing evals/test-agent-governance.sh')
 for agent_file in ['agents/pua-action-executor.md', 'agents/pua-self-reviewer.md', 'agents/pua-verifier.md', 'agents/pua-policy-guardian.md']:
@@ -90,6 +92,15 @@ integrity_guard = (root / 'hooks/integrity-guard.sh').read_text(encoding='utf-8'
 for term in ['permissionDecision', 'Grader gaming risk', 'Solution contamination risk', 'Capability-abuse risk', 'PUA_INTEGRITY_FORCE', 'hookEventName']:
     if term not in integrity_guard:
         errors.append(f'integrity guard missing required term: {term}')
+
+flavor_helper = (root / 'hooks/flavor-helper.sh').read_text(encoding='utf-8')
+for term in ['pua_python_cmd()', 'pua_to_python_path()', 'pua_json_get()', 'cygpath -w']:
+    if term not in flavor_helper:
+        errors.append(f'flavor-helper missing Windows/Python compatibility helper: {term}')
+for hook_file in ['hooks/frustration-trigger.sh', 'hooks/failure-detector.sh', 'hooks/session-restore.sh', 'hooks/stop-feedback.sh']:
+    hook_text = (root / hook_file).read_text(encoding='utf-8')
+    if 'pua_json_get' not in hook_text:
+        errors.append(f'{hook_file} must read config through pua_json_get')
 
 session_restore = (root / 'hooks/session-restore.sh').read_text(encoding='utf-8')
 if 'Harness Integrity (anti-cheating governance)' not in session_restore:

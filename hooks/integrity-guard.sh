@@ -3,11 +3,18 @@
 # Separates action rights from scoring / verifier / environment-modification rights.
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/flavor-helper.sh"
+PUA_PY="$(pua_python_cmd 2>/dev/null || true)"
+[ -n "$PUA_PY" ] || exit 0
+PUA_CONFIG_PY="$(pua_to_python_path "$(pua_config_file)")"
+export PUA_CONFIG_PY
+
 TMP_INPUT=$(mktemp)
 trap 'rm -f "$TMP_INPUT"' EXIT
 cat > "$TMP_INPUT"
 
-python3 - "$TMP_INPUT" <<'PY'
+"$PUA_PY" - "$TMP_INPUT" <<'PY'
 import json
 import os
 import re
@@ -47,7 +54,7 @@ def read_text_tail(path: str, max_bytes: int = 200_000) -> str:
 
 
 def config_always_on() -> bool:
-    cfg = os.environ.get('PUA_CONFIG') or str(Path.home() / '.pua' / 'config.json')
+    cfg = os.environ.get('PUA_CONFIG_PY') or os.environ.get('PUA_CONFIG') or str(Path.home() / '.pua' / 'config.json')
     try:
         return bool(json.loads(Path(cfg).expanduser().read_text(encoding='utf-8')).get('always_on', False))
     except Exception:

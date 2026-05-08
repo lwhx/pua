@@ -3,8 +3,55 @@
 # Usage: source this file, then call get_flavor
 # Sets: PUA_FLAVOR, PUA_ICON, PUA_L1, PUA_L2, PUA_L3, PUA_L4, PUA_KEYWORDS, PUA_FLAVOR_INSTRUCTION
 
+# Return a usable Python executable. Windows Git Bash commonly has `python`
+# but not `python3`; verify by importing json rather than trusting command -v.
+pua_python_cmd() {
+  local candidate
+  for candidate in "${PYTHON:-}" python3 python; do
+    [ -z "$candidate" ] && continue
+    if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -c "import json,sys" >/dev/null 2>&1; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Convert POSIX-looking Git Bash paths (/c/Users/...) to native Windows paths
+# before passing them to native Windows Python. No-op on macOS/Linux.
+pua_to_python_path() {
+  local path="$1"
+  if command -v cygpath >/dev/null 2>&1; then
+    cygpath -w "$path" 2>/dev/null || printf '%s\n' "$path"
+  else
+    printf '%s\n' "$path"
+  fi
+}
+
+pua_config_file() {
+  printf '%s\n' "${PUA_CONFIG:-${HOME:-~}/.pua/config.json}"
+}
+
+pua_json_get() {
+  local path="$1"
+  local key="$2"
+  local default="$3"
+  local py py_path
+  py=$(pua_python_cmd 2>/dev/null) || { printf '%s\n' "$default"; return 0; }
+  py_path=$(pua_to_python_path "$path")
+  "$py" -c 'import json,sys
+path,key,default=sys.argv[1],sys.argv[2],sys.argv[3]
+try:
+    with open(path, encoding="utf-8") as f:
+        value=json.load(f).get(key, default)
+    print(value)
+except Exception:
+    print(default)' "$py_path" "$key" "$default" 2>/dev/null || printf '%s\n' "$default"
+}
+
 get_flavor() {
-  local config="${HOME:-~}/.pua/config.json"
+  local config
+  config=$(pua_config_file)
   local raw_flavor=""
   # Initialize PUA_LANGUAGE unconditionally so callers running under
   # `set -u` don't trip when ~/.pua/config.json is missing (first-run users).
@@ -12,8 +59,8 @@ get_flavor() {
   PUA_LANGUAGE=""
 
   if [ -f "$config" ]; then
-    raw_flavor=$(python3 -c "import os,json; print(json.load(open(os.path.expanduser('~/.pua/config.json'))).get('flavor','alibaba'))" 2>/dev/null || echo "alibaba")
-    PUA_LANGUAGE=$(python3 -c "import os,json; print(json.load(open(os.path.expanduser('~/.pua/config.json'))).get('language',''))" 2>/dev/null || echo "")
+    raw_flavor=$(pua_json_get "$config" flavor alibaba)
+    PUA_LANGUAGE=$(pua_json_get "$config" language "")
   fi
 
   # Normalize flavor name

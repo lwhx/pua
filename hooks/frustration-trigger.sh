@@ -2,21 +2,22 @@
 # PUA UserPromptSubmit hook: inject flavor-aware PUA trigger on user frustration
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/flavor-helper.sh"
+
 # Respect /pua:off — skip injection when always_on is false.
 # Tests may set PUA_FORCE_ON=1 to avoid leaking a user's local ~/.pua/config.json
 # into trigger-eval results.
 if [ "${PUA_FORCE_ON:-0}" != "1" ]; then
-  PUA_CONFIG="${PUA_CONFIG:-${HOME:-~}/.pua/config.json}"
+  PUA_CONFIG="$(pua_config_file)"
   if [ -f "$PUA_CONFIG" ]; then
-    ALWAYS_ON=$(python3 -c "import json,sys; print(json.load(open(sys.argv[1])).get('always_on', True))" "$PUA_CONFIG" 2>/dev/null || echo "True")
+    ALWAYS_ON=$(pua_json_get "$PUA_CONFIG" always_on True)
     if [ "$ALWAYS_ON" = "False" ]; then
       exit 0
     fi
   fi
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "${SCRIPT_DIR}/flavor-helper.sh"
 get_flavor
 
 cat << EOF

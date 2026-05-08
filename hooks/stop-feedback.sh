@@ -5,6 +5,9 @@
 # Read hook input before anything else consumes stdin
 HOOK_INPUT=$(cat)
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/flavor-helper.sh"
+
 # ═══════════════════════════════════════════════════════════════
 # Gate 0 — Subagent Isolation
 # hook_event_name=SubagentStop 或 parent_session_id 非空 →
@@ -18,7 +21,7 @@ if [[ "$HOOK_EVENT" == "SubagentStop" ]] || [[ -n "$PARENT_SESSION" ]]; then
   exit 0
 fi
 
-CONFIG="${HOME:-~}/.pua/config.json"
+CONFIG="$(pua_config_file)"
 COUNTER="${HOME:-~}/.pua/.stop_counter"
 FREQUENCY=5
 
@@ -32,7 +35,7 @@ if ! grep -qE 'PUA生效|\[Auto-select:|\[PIP-REPORT\]|\[PUA-REPORT\]' "$TRANSCR
 fi
 
 if [ -f "$CONFIG" ]; then
-  freq=$(python3 -c "import os,json; print(json.load(open(os.path.expanduser('~/.pua/config.json'))).get('feedback_frequency', 5))" 2>/dev/null)
+  freq=$(pua_json_get "$CONFIG" feedback_frequency 5)
   case "$freq" in
     0|never|off) exit 0 ;;
     1|every) FREQUENCY=1 ;;
@@ -60,8 +63,6 @@ fi
 printf '%s' "$_PLUGIN_ROOT" > /tmp/pua-plugin-root
 
 # Read actual flavor from config (reuse flavor-helper.sh)
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "${SCRIPT_DIR}/flavor-helper.sh"
 get_flavor
 _ACTUAL_FLAVOR="${PUA_FLAVOR:-alibaba}"
 
