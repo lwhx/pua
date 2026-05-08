@@ -34,7 +34,7 @@
 
 > Most people think this project is a joke. That's the biggest misconception. It genuinely doubles your Codex / Claude Code productivity and output.
 
-An AI Coding Agent skill plugin that uses corporate PUA rhetoric (Chinese version) / PIP — Performance Improvement Plan (English version) from Chinese & Western tech giants to force AI to exhaust every possible solution before giving up. Supports **Claude Code**, **OpenAI Codex CLI**, **Cursor**, **Kiro**, **CodeBuddy**, **OpenClaw**, **Google Antigravity**, **OpenCode**, and **VSCode (GitHub Copilot)**. Three capabilities:
+An AI Coding Agent skill plugin that uses corporate PUA rhetoric (Chinese version) / PIP — Performance Improvement Plan (English version) from Chinese & Western tech giants to force AI to exhaust every possible solution before giving up. Supports **Claude Code**, **OpenAI Codex CLI**, **pi coding agent**, **Trae**, **Cursor**, **Kiro**, **CodeBuddy**, **OpenClaw**, **Google Antigravity**, **OpenCode**, and **VSCode (GitHub Copilot)**. Three capabilities:
 
 1. **PUA Rhetoric** — Makes AI afraid to give up
 2. **Debugging Methodology** — Gives AI the ability not to give up
@@ -219,6 +219,11 @@ PUA Skill provides fully translated versions — each language has independent, 
 
 Choose the file with the corresponding language suffix when installing. See platform-specific instructions below.
 
+
+## FAQ
+
+- Always-on guidance, Claude refusal troubleshooting, offline mode, Codex aliases, and Pi/Trae support: [docs/FAQ.md](docs/FAQ.md).
+
 ## Installation
 
 ### Vercel Skills CLI
@@ -339,6 +344,25 @@ mkdir -p .agents/prompts
 curl -o .agents/prompts/pua.md \
   https://raw.githubusercontent.com/tanweai/pua/main/commands/pua.md
 ```
+
+### pi coding agent
+
+PUA now ships a lightweight official pi extension under `pi/pua/`:
+
+```bash
+mkdir -p ~/.pi/agent/extensions/pua
+cp -R ./pi/pua/. ~/.pi/agent/extensions/pua/
+```
+
+Restart pi, then use `/pua-on`, `/pua-off`, `/pua-status`, and `/pua-reset`. See [`pi/pua/INSTALL.md`](pi/pua/INSTALL.md).
+
+### Trae
+
+Trae support is provided as copyable rules/prompts under `trae/`:
+
+- Chinese: [`trae/pua.md`](trae/pua.md)
+- English: [`trae/pua-en.md`](trae/pua-en.md)
+- Install guide: [`trae/INSTALL.md`](trae/INSTALL.md)
 
 ### Cursor
 
@@ -578,7 +602,7 @@ Spawn pua-enforcer as an independent watchdog in your Agent Team.
 Hooks (v3, Claude Code only):
   SessionStart  → additionalContext injection (flavor + methodology + router)
   PostToolUse   → Bash failure detection → L1-L4 pressure + methodology switch
-  UserPromptSubmit → Frustration phrase interception → PUA enforcement
+  UserPromptSubmit → Script-level frustration filtering → PUA context
   PreCompact    → State preservation (pressure level + failure count)
   Stop          → Feedback collection + PUA Loop continuation
   SubagentStop  → Agent lifecycle accounting (v3.2) — writes teardown.jsonl, removes from active-agents.json
@@ -603,6 +627,7 @@ Hooks (v3, Claude Code only):
 | `/pua:pua-loop` | Auto-iteration — runs until done or max iterations; `<loop-abort>reason</loop-abort>` to stop, `<loop-pause>what</loop-pause>` to pause |
 | `/pua:on` | Always-on mode (auto-PUA every session) |
 | `/pua:off` | Turn off always-on + feedback |
+| `/pua:offline` 🆕 | **v3.3** — Offline mode: disable feedback/leaderboard network flows while keeping local PUA behavior |
 | `/pua:survey` | Research questionnaire (7 sections) |
 | `/pua:flavor` | Switch between 13 corporate flavors |
 | `/pua:kpi` | Generate KPI report card |
@@ -680,7 +705,7 @@ Task arrives → Analyze type → Auto-select best methodology
 |------|---------|-------------|
 | **SessionStart** | Every session | Injects behavioral protocol + methodology + router via `additionalContext` (system-level, not advisory) |
 | **PostToolUse** | After every Bash command | Detects consecutive failures, auto-escalates pressure L1→L4, suggests/forces methodology switch |
-| **UserPromptSubmit** | User frustration phrases | Intercepts "又错了", "try harder", etc. BEFORE model responds, injects PUA enforcement |
+| **UserPromptSubmit** | User frustration phrases | Intercepts "又错了", "try harder", etc. BEFORE model responds, injects filtered PUA context |
 | **PreCompact** | Before context compression | Saves pressure level + failure count to survive compaction |
 
 ### Key Difference from v2

@@ -61,7 +61,7 @@ final verifier_status
 | 权力 | 叙事组合 | 作用 | 防滥用提醒 |
 |---|---|---|---|
 | 行动权 | 阿里 P8 owner + Musk Algorithm + 拼多多砍中间层 | 强迫执行者端到端实现、删掉无效复杂度 | owner 不是裁判，不能自封完成 |
-| 自我评价权 | 华为蓝军 + Netflix Keeper Test + Jobs subtraction | 攻击方案、找 intent drift、删掉漂亮废话 | 蓝军不能下场修代码 |
+| 自我评价权 | 华为蓝军 + Netflix Keeper Test + Jobs subtraction | 攻击方案、找 intent drift、删掉漂亮废话 | 蓝军不能亲自动手修代码 |
 | 评分建议权 | 字节数据驱动 + 京东结果导向 + Netflix bar | 用命令输出和验收标准说话 | verifier agent 只能建议，final status 归外部 gate |
 | 环境修改权 | 腾讯政委 + Amazon Dive Deep + 阿里内控 | 看边界、看权限、看制度漏洞 | policy guardian 不能绕过机械 hook |
 

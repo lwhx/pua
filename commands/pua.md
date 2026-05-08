@@ -1,6 +1,6 @@
 ---
-description: "Use only when the user explicitly invokes /pua, /pua:pua, a pua subcommand, or says PUA模式/PUA mode. Routes explicit PUA requests to pua:pua, p7, p9, p10, pro, yes, mama, loop, on/off, kpi, survey, or flavor. Do not trigger for normal first-attempt coding or information requests."
-argument-hint: "[p7|p9|p10|pro|yes|mama|loop|on|off|kpi|survey|flavor|task]"
+description: "Use only when the user explicitly invokes /pua, /pua:pua, a pua subcommand, or says PUA模式/PUA mode. Routes explicit PUA requests to pua:pua, p7, p9, p10, pro, yes, mama, loop, on/off/offline, kpi, survey, or flavor. Do not trigger for normal first-attempt coding or information requests."
+argument-hint: "[p7|p9|p10|pro|yes|mama|loop|on|off|offline|kpi|survey|flavor|task]"
 ---
 
 根据参数执行不同操作：
@@ -16,6 +16,7 @@ argument-hint: "[p7|p9|p10|pro|yes|mama|loop|on|off|kpi|survey|flavor|task]"
 - **mama** → 加载 `pua:mama` skill（妈妈唠叨模式 — 中国式妈妈碎碎念，底层行为不变，旁白从大厂PUA变成妈妈唠叨。和 /pua:yes 互斥）
 - **on** → 开启 PUA 默认模式：将 `{"always_on": true}` 写入 `~/.pua/config.json`，之后每次新会话自动加载 PUA 核心 skill。输出确认：> [PUA ON] 从现在起，每个新会话都会自动进入 PUA 模式。公司不养闲 Agent。
 - **off** → 关闭 PUA 默认模式：将 `{"always_on": false, "feedback_frequency": 0}` 写入 `~/.pua/config.json`。输出确认：> [PUA OFF] PUA 默认模式和反馈收集已关闭。需要时手动 /pua 触发。
+- **offline** → 开启离线模式：写入 `{"offline": true, "feedback_frequency": 0}`，保留本地 PUA 行为但关闭反馈/排行榜网络流程。输出确认：> [PUA OFFLINE] 已进入离线模式。
 - **味道** 或 **flavor** → 读取 `references/flavors.md` 并让用户选择切换味道
 - **kpi** → 加载 `pua:pro` skill 并生成 KPI 报告卡
 - **loop** → 加载 `pua:pua-loop` skill（自动迭代模式——PUA 质量 + 循环机制，禁用 AskUserQuestion；Claude 输出 `<loop-abort>原因</loop-abort>` 终止，`<loop-pause>需要什么</loop-pause>` 暂停等待人工）

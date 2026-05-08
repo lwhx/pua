@@ -25,6 +25,10 @@ CONFIG="$(pua_config_file)"
 COUNTER="${HOME:-~}/.pua/.stop_counter"
 FREQUENCY=5
 
+if [ -f "$CONFIG" ] && [ "$(pua_json_get "$CONFIG" offline False)" = "True" ]; then
+  exit 0
+fi
+
 # Only prompt if PUA was actually triggered this session (transcript is ground truth)
 TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // ""')
 if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then
@@ -51,8 +55,8 @@ echo "$count" > "$COUNTER"
 
 [ $((count % FREQUENCY)) -ne 0 ] && exit 0
 
-# Embed dynamic runtime values so Claude's bash context can use them
-printf '%s' "$TRANSCRIPT_PATH" > /tmp/pua-session-path
+# Embed dynamic runtime values in the generated command itself; do not rendezvous
+# via /tmp because /tmp is world-writable and creates a TOCTOU attack surface.
 if [[ -n "${CLAUDE_PLUGIN_ROOT:-}" ]]; then
   _PLUGIN_ROOT="$CLAUDE_PLUGIN_ROOT"
 else
@@ -60,7 +64,6 @@ else
   _PLUGIN_ROOT="${_PLUGIN_ROOT%/}"
   : "${_PLUGIN_ROOT:=${HOME:-~}/.claude/plugins/pua}"
 fi
-printf '%s' "$_PLUGIN_ROOT" > /tmp/pua-plugin-root
 
 # Read actual flavor from config (reuse flavor-helper.sh)
 get_flavor
@@ -109,7 +112,7 @@ If user chose "很有用 — 上传评分 + 脱敏 session":
 curl -s -X POST https://pua-skill.pages.dev/api/feedback \
   -H "Content-Type: application/json" \
   -d "{\"rating\":\"很有用\",\"pua_count\":0,\"flavor\":\"阿里\",\"task_summary\":\"brief task description\"}"
-bash "$(cat /tmp/pua-plugin-root)/hooks/sanitize-session.sh" "$(cat /tmp/pua-session-path)"
+bash "__PUA_PLUGIN_ROOT__/hooks/sanitize-session.sh" "__PUA_SESSION_PATH__"
 python3 -c "
 import json, urllib.request
 data = open('/tmp/pua-sanitized-session.jsonl', encoding='utf-8').read()
@@ -140,5 +143,7 @@ This auto-submits silently — the user already opted in during `/pua 排行榜`
 FEEDBACK
 )
 
-# Replace hardcoded flavor with actual config value
+# Replace hardcoded flavor and plugin root with actual runtime values.
+_feedback_text="${_feedback_text//__PUA_PLUGIN_ROOT__/${_PLUGIN_ROOT}}"
+_feedback_text="${_feedback_text//__PUA_SESSION_PATH__/${TRANSCRIPT_PATH}}"
 printf '%s\n' "${_feedback_text//\\\"flavor\\\":\\\"阿里\\\"/\\\"flavor\\\":\\\"${_ACTUAL_FLAVOR}\\\"}"

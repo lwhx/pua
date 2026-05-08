@@ -105,3 +105,21 @@ Remove-Item "$env:USERPROFILE\.codex\skills\pua"
 Remove-Item "$env:USERPROFILE\.codex\prompts\pua.md"
 Remove-Item -Recurse "$env:USERPROFILE\.codex\pua"
 ```
+
+
+## Claude Code subcommand aliases
+
+Codex can use `$pua-xxx` aliases for Claude Code `/pua:xxx` commands:
+
+| Claude Code | Codex CLI |
+|---|---|
+| `/pua:on` | `$pua-on` |
+| `/pua:off` | `$pua-off` |
+| `/pua:offline` | `$pua-offline` |
+| `/pua:p7` | `$pua-p7` |
+| `/pua:p9` | `$pua-p9` |
+| `/pua:p10` | `$pua-p10` |
+| `/pua:pro` | `$pua-pro` |
+| `/pua:pua-loop` | `$pua-loop` |
+
+Install by copying the `codex/pua-*` directories into your Codex skills directory next to `codex/pua`.

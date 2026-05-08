@@ -82,6 +82,8 @@ if not (root / 'evals/test-integrity-guard.sh').exists():
     errors.append('missing evals/test-integrity-guard.sh')
 if not (root / 'evals/test-windows-python-hooks.sh').exists():
     errors.append('missing evals/test-windows-python-hooks.sh')
+if not (root / 'evals/test-issue-regressions.sh').exists():
+    errors.append('missing evals/test-issue-regressions.sh')
 if not (root / 'evals/test-agent-governance.sh').exists():
     errors.append('missing evals/test-agent-governance.sh')
 for agent_file in ['agents/pua-action-executor.md', 'agents/pua-self-reviewer.md', 'agents/pua-verifier.md', 'agents/pua-policy-guardian.md']:
@@ -101,6 +103,48 @@ for hook_file in ['hooks/frustration-trigger.sh', 'hooks/failure-detector.sh', '
     hook_text = (root / hook_file).read_text(encoding='utf-8')
     if 'pua_json_get' not in hook_text:
         errors.append(f'{hook_file} must read config through pua_json_get')
+
+# Open issue regression guards
+required_paths = [
+    'commands/offline.md',
+    'codex/pua-on/SKILL.md',
+    'codex/pua-off/SKILL.md',
+    'codex/pua-p7/SKILL.md',
+    'codex/pua-p9/SKILL.md',
+    'codex/pua-p10/SKILL.md',
+    'pi/pua/index.ts',
+    'pi/pua/INSTALL.md',
+    'trae/INSTALL.md',
+    'trae/pua.md',
+    'docs/FAQ.md',
+    'landing/migrations/0003_feedback_rate_limits.sql',
+]
+for rel in required_paths:
+    if not (root / rel).exists():
+        errors.append(f'missing issue-sweep asset: {rel}')
+frustration = (root / 'hooks/frustration-trigger.sh').read_text(encoding='utf-8')
+for term in ['TRIGGER_RE', 'PUA Skill Context']:
+    if term not in frustration:
+        errors.append(f'frustration trigger missing internal filter/context term: {term}')
+if 'MUST invoke' in frustration or 'PUA behavioral enforcement' in frustration:
+    errors.append('frustration trigger still contains coercive injection wording')
+stop_feedback = (root / 'hooks/stop-feedback.sh').read_text(encoding='utf-8')
+if '/tmp/pua-plugin-root' in stop_feedback:
+    errors.append('stop-feedback must not use /tmp/pua-plugin-root')
+if 'offline' not in stop_feedback:
+    errors.append('stop-feedback must honor offline config')
+feedback_api = (root / 'landing/functions/api/feedback.ts').read_text(encoding='utf-8')
+for term in ['MAX_BODY_BYTES', 'MAX_SESSION_DATA_BYTES', 'RATE_LIMIT_MAX_WRITES', 'ALLOWED_ORIGINS']:
+    if term not in feedback_api:
+        errors.append(f'feedback endpoint missing abuse-control term: {term}')
+if '[PUA-DIAGNOSIS]' not in (root / 'skills/pua/SKILL.md').read_text(encoding='utf-8'):
+    errors.append('pua skill missing diagnosis-first rule')
+if '军令状' not in (root / 'skills/pua/references/methodology-huawei.md').read_text(encoding='utf-8'):
+    errors.append('Huawei methodology missing military-order mode')
+for scan_rel in ['agents', 'commands', 'skills/pua/references']:
+    for path in (root / scan_rel).rglob('*'):
+        if path.is_file() and '下场' in path.read_text(encoding='utf-8', errors='ignore'):
+            errors.append(f'ambiguous 下场 wording remains in {path.relative_to(root)}')
 
 session_restore = (root / 'hooks/session-restore.sh').read_text(encoding='utf-8')
 if 'Harness Integrity (anti-cheating governance)' not in session_restore:

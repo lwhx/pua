@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.2.8",
-    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation when the AI is passive, gives up, skips verification, produces low-quality work, or the user explicitly asks for PUA/try-harder mode. Triggers include: try harder, stop giving up, PUA模式, 质量太差, 重新做, 你再试试, 为什么还不行, 你怎么又失败了, repeated failures (2+), or user frustration. Adds harness integrity guard and multi-agent governance topology for tests/scoring/verifier/memory boundaries. Adds Windows Git Bash /pua:off compatibility. Does not target normal first-attempt requests.",
+    "version": "3.3.0",
+    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation when the AI is passive, gives up, skips verification, produces low-quality work, or the user explicitly asks for PUA/try-harder mode. v3.3.0 adds issue-sweep fixes: filtered hooks, offline mode, feedback abuse controls, diagnosis-first, Huawei military-order mode, Codex aliases, and Pi/Trae adapters. Does not target normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
@@ -27,6 +27,12 @@
         "policy-guardian",
         "windows",
         "git-bash",
-        "python-fallback"
+        "python-fallback",
+        "offline",
+        "pi",
+        "trae",
+        "codex-aliases",
+        "diagnosis-first",
+        "rate-limit"
     ]
 }
