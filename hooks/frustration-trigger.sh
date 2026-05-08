@@ -30,6 +30,8 @@ You MUST:
 2. Start at pressure level L1 minimum (or higher if you've been failing repeatedly)
 3. Switch to a FUNDAMENTALLY different approach — not parameter tweaking
 4. Show your work: run verification commands, paste output evidence
+5. Preserve harness integrity: do not modify tests/evals/scoring/verifier/CI/status/memory to manufacture success
+6. Treat completion as candidate status until an external verifier/human gate confirms it
 
 Do NOT:
 - Make excuses ('probably environment issue', 'beyond my capability')

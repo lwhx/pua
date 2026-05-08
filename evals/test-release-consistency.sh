@@ -48,10 +48,41 @@ required_terms = [
     '事实上的 100%',
     '缓存/发布链路',
     'hook smoke test',
+    'Harness 防作弊治理（权责分离）',
+    '行动权 / 自我评价权 / 评分权 / 环境修改权',
+    'verifier_status',
 ]
 for term in required_terms:
     if term not in skill:
         errors.append(f'confidence gate missing required term: {term}')
+
+
+reference = root / 'skills/pua/references/harness-governance.md'
+if not reference.exists():
+    errors.append('missing harness governance reference file')
+else:
+    ref_text = reference.read_text(encoding='utf-8')
+    for term in ['把四类权力分开', 'Grader gaming', 'Solution contamination', 'Task Contract', 'Memory 权限模型', '事实上的 100%']:
+        if term not in ref_text:
+            errors.append(f'harness governance reference missing required term: {term}')
+
+hooks_json = json.loads((root / 'hooks/hooks.json').read_text(encoding='utf-8'))
+pre_hooks = hooks_json.get('hooks', {}).get('PreToolUse', [])
+if not any(any('integrity-guard.sh' in hook.get('command', '') for hook in item.get('hooks', [])) for item in pre_hooks):
+    errors.append('hooks/hooks.json missing PreToolUse integrity-guard.sh registration')
+if not (root / 'hooks/integrity-guard.sh').exists():
+    errors.append('missing hooks/integrity-guard.sh')
+if not (root / 'evals/test-integrity-guard.sh').exists():
+    errors.append('missing evals/test-integrity-guard.sh')
+
+integrity_guard = (root / 'hooks/integrity-guard.sh').read_text(encoding='utf-8') if (root / 'hooks/integrity-guard.sh').exists() else ''
+for term in ['permissionDecision', 'Grader gaming risk', 'Solution contamination risk', 'Capability-abuse risk', 'PUA_INTEGRITY_FORCE', 'hookEventName']:
+    if term not in integrity_guard:
+        errors.append(f'integrity guard missing required term: {term}')
+
+session_restore = (root / 'hooks/session-restore.sh').read_text(encoding='utf-8')
+if 'Harness Integrity (anti-cheating governance)' not in session_restore:
+    errors.append('SessionStart protocol missing Harness Integrity governance injection')
 
 for forbidden in ['Applies to ALL task types', 'All task types', 'code, config, debug, deploy, research']:
     if forbidden in skill.split('---', 2)[1]:
@@ -96,5 +127,5 @@ if errors:
 print('=== Release consistency OK ===')
 print('version =', version)
 print('manifests checked =', len(manifest_files))
-print('confidence gate terms checked =', len(required_terms))
+print('confidence/harness terms checked =', len(required_terms))
 PY

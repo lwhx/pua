@@ -1,6 +1,6 @@
 {
     "name": "pua",
-    "version": "3.2.5",
+    "version": "3.2.6",
     "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure. Triggers on explicit PUA requests, user frustration, repeated failures, passive behavior, unverified completion, or quality complaints. Common triggers: try harder, figure it out, stop giving up, you keep failing, stop spinning, you broke it, 加油, 别偷懒, 你再试试, 又错了, 降智了, 质量太差, 换个方法, /pua. Not for normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",

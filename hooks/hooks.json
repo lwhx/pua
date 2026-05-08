@@ -1,5 +1,5 @@
 {
-  "description": "PUA v3 hooks: additionalContext injection, failure detection, frustration interception, state management",
+  "description": "PUA v3 hooks: additionalContext injection, failure detection, frustration interception, integrity guard, state management",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -81,6 +81,18 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-teardown.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Grep|Glob|Edit|Write|MultiEdit|WebSearch|WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/integrity-guard.sh\"",
             "timeout": 5
           }
         ]

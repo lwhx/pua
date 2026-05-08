@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.2.5",
-    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation when the AI is passive, gives up, skips verification, produces low-quality work, or the user explicitly asks for PUA/try-harder mode. Triggers include: try harder, stop giving up, PUA模式, 质量太差, 重新做, 你再试试, 为什么还不行, 你怎么又失败了, repeated failures (2+), or user frustration. Does not target normal first-attempt requests.",
+    "version": "3.2.6",
+    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation when the AI is passive, gives up, skips verification, produces low-quality work, or the user explicitly asks for PUA/try-harder mode. Triggers include: try harder, stop giving up, PUA模式, 质量太差, 重新做, 你再试试, 为什么还不行, 你怎么又失败了, repeated failures (2+), or user frustration. Adds harness integrity guard for tests/scoring/verifier/memory boundaries. Does not target normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
@@ -18,6 +18,9 @@
         "agent-team",
         "p7-p8-p9-p10",
         "parallel-execution",
-        "self-evolution"
+        "self-evolution",
+        "harness",
+        "verifier",
+        "anti-cheating"
     ]
 }
