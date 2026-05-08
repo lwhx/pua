@@ -8,8 +8,8 @@
     "plugins": [
         {
             "name": "pua",
-            "description": "PUA 我们不养闲 Agent — 11 modular skills, 13 corporate flavors, L0-L4 pressure, auto-iteration loop, ENFP yes-mode, Chinese-mom nagging mode, concentrated shot mode, agent lifecycle teardown protocol, feedback system. v3.3.0: issue sweep with filtered hooks, offline mode, feedback abuse controls, diagnosis-first, Huawei military-order mode, Codex aliases, Pi/Trae adapters.",
-            "version": "3.3.0",
+            "description": "PUA 我们不养闲 Agent — 11 modular skills, 13 corporate flavors, L0-L4 pressure, auto-iteration loop, ENFP yes-mode, Chinese-mom nagging mode, concentrated shot mode, agent lifecycle teardown protocol, feedback system. v3.4.0: Trae SKILL.md pack, pi.dev package manifest, and auth-gated session feedback upload with anonymous rating preserved.",
+            "version": "3.4.0",
             "source": "./",
             "author": {
                 "name": "探微安全实验室",

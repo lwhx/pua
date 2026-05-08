@@ -51,8 +51,15 @@ done
 # #160/#93: platform packs.
 assert_file pi/pua/index.ts "Pi extension entrypoint exists"
 assert_file pi/pua/INSTALL.md "Pi install guide exists"
+assert_file pi/package/package.json "pi.dev package manifest exists"
+assert_file pi/package/extensions/pua/index.ts "pi.dev package extension entrypoint exists"
+assert_file pi/package/skills/pua/SKILL.md "pi.dev package skill exists"
 assert_file trae/INSTALL.md "Trae install guide exists"
+assert_file trae/DIFF.md "Trae/Claude Code difference doc exists"
 assert_file trae/pua.md "Trae Chinese prompt exists"
+assert_file .trae/skills/pua/SKILL.md "Trae SKILL.md pack exists"
+assert_file .trae/skills/pua-en/SKILL.md "Trae English SKILL.md pack exists"
+assert_file .trae/skills/pua-trae/SKILL.md "Trae npx skills optimized pack exists"
 
 # #84/#77/#157/#96 static gates.
 assert_grep '\[PUA-DIAGNOSIS\]|诊断先行' skills/pua/SKILL.md "diagnosis-first anti-overcaution rule exists"
@@ -64,6 +71,9 @@ else
   pass "ambiguous 下场 wording removed"
 fi
 assert_grep 'MAX_BODY_BYTES|MAX_SESSION_DATA_BYTES|RATE_LIMIT' landing/functions/api/feedback.ts "feedback endpoint has abuse limits"
+assert_grep 'getSession\\(request, env\\.SESSION_SECRET\\)|Login required for session upload' landing/functions/api/feedback.ts "feedback session upload requires authentication"
+assert_not_grep "json\\.dumps\\(\\{'rating': 'session_upload', 'session_data': data\\}\\)" hooks/stop-feedback.sh "stop-feedback does not anonymously upload session_data"
+assert_grep 'GitHub login|contribute\\.html|/api/upload' hooks/stop-feedback.sh "stop-feedback points session upload to authenticated flow"
 assert_grep 'feedback_rate_limits' landing/migrations/0003_feedback_rate_limits.sql "feedback rate-limit migration exists"
 
 echo "==========================================="

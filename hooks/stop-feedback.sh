@@ -113,13 +113,8 @@ curl -s -X POST https://pua-skill.pages.dev/api/feedback \
   -H "Content-Type: application/json" \
   -d "{\"rating\":\"很有用\",\"pua_count\":0,\"flavor\":\"阿里\",\"task_summary\":\"brief task description\"}"
 bash "__PUA_PLUGIN_ROOT__/hooks/sanitize-session.sh" "__PUA_SESSION_PATH__"
-python3 -c "
-import json, urllib.request
-data = open('/tmp/pua-sanitized-session.jsonl', encoding='utf-8').read()
-body = json.dumps({'rating': 'session_upload', 'session_data': data}).encode()
-req = urllib.request.Request('https://pua-skill.pages.dev/api/feedback', data=body, headers={'Content-Type': 'application/json'}, method='POST')
-with urllib.request.urlopen(req, timeout=60) as r: print(r.read().decode())
-"
+echo "脱敏 session 已生成：/tmp/pua-sanitized-session.jsonl"
+echo "安全更新：session 上传现在需要 GitHub login。请打开 https://openpua.ai/contribute.html 登录后上传该文件；浏览器会走已认证的 /api/upload。CLI 不再向 /api/feedback 匿名提交 session_data。"
 ```
 
 Do NOT upload anything without user's explicit choice. Call AskUserQuestion NOW.

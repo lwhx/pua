@@ -6,7 +6,23 @@
 2. 通过 tool result 维护共享失败计数 `~/.pua/.failure_count`；
 3. 提供 `/pua-on`、`/pua-off`、`/pua-status`、`/pua-reset`。
 
-## 安装
+## 推荐：pi.dev package
+
+本仓库现在提供 pi.dev package 源码：`pi/package/`。
+
+本地安装：
+
+```bash
+pi install ./pi/package
+```
+
+发布到 npm 后安装：
+
+```bash
+pi install npm:@tanweai/pi-pua
+```
+
+## 手动安装 extension-only
 
 ```bash
 mkdir -p ~/.pi/agent/extensions/pua

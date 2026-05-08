@@ -347,21 +347,41 @@ curl -o .agents/prompts/pua.md \
 
 ### pi coding agent
 
-PUA now ships a lightweight official pi extension under `pi/pua/`:
+PUA now ships both a pi.dev package and a lightweight extension-only adapter.
+
+Package install from this checkout:
+
+```bash
+pi install ./pi/package
+```
+
+After npm publication:
+
+```bash
+pi install npm:@tanweai/pi-pua
+```
+
+Extension-only manual install:
 
 ```bash
 mkdir -p ~/.pi/agent/extensions/pua
 cp -R ./pi/pua/. ~/.pi/agent/extensions/pua/
 ```
 
-Restart pi, then use `/pua-on`, `/pua-off`, `/pua-status`, and `/pua-reset`. See [`pi/pua/INSTALL.md`](pi/pua/INSTALL.md).
+Restart pi, then use `/pua-on`, `/pua-off`, `/pua-status`, and `/pua-reset`. See [`pi/pua/INSTALL.md`](pi/pua/INSTALL.md) and [`pi/package/README.md`](pi/package/README.md).
 
 ### Trae
 
-Trae support is provided as copyable rules/prompts under `trae/`:
+Trae support is provided as real `SKILL.md` packs plus copyable fallback rules:
 
+```bash
+npx skills add tanweai/pua --skill pua-trae -a trae -y
+```
+
+- Skill pack: [`.trae/skills/pua/SKILL.md`](.trae/skills/pua/SKILL.md)
 - Chinese: [`trae/pua.md`](trae/pua.md)
 - English: [`trae/pua-en.md`](trae/pua-en.md)
+- Claude Code vs Trae differences: [`trae/DIFF.md`](trae/DIFF.md)
 - Install guide: [`trae/INSTALL.md`](trae/INSTALL.md)
 
 ### Cursor

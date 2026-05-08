@@ -114,10 +114,19 @@ required_paths = [
     'codex/pua-p10/SKILL.md',
     'pi/pua/index.ts',
     'pi/pua/INSTALL.md',
+    'pi/package/package.json',
+    'pi/package/extensions/pua/index.ts',
+    'pi/package/skills/pua/SKILL.md',
     'trae/INSTALL.md',
+    'trae/DIFF.md',
     'trae/pua.md',
+    '.trae/skills/pua/SKILL.md',
+    '.trae/skills/pua-en/SKILL.md',
+    '.trae/skills/pua-trae/SKILL.md',
     'docs/FAQ.md',
     'landing/migrations/0003_feedback_rate_limits.sql',
+    'evals/test-platform-compat.sh',
+    'evals/test-feedback-auth.sh',
 ]
 for rel in required_paths:
     if not (root / rel).exists():
@@ -134,9 +143,15 @@ if '/tmp/pua-plugin-root' in stop_feedback:
 if 'offline' not in stop_feedback:
     errors.append('stop-feedback must honor offline config')
 feedback_api = (root / 'landing/functions/api/feedback.ts').read_text(encoding='utf-8')
-for term in ['MAX_BODY_BYTES', 'MAX_SESSION_DATA_BYTES', 'RATE_LIMIT_MAX_WRITES', 'ALLOWED_ORIGINS']:
+for term in ['MAX_BODY_BYTES', 'MAX_SESSION_DATA_BYTES', 'RATE_LIMIT_MAX_WRITES', 'ALLOWED_ORIGINS', 'getSession(request, env.SESSION_SECRET)', 'Login required for session upload']:
     if term not in feedback_api:
         errors.append(f'feedback endpoint missing abuse-control term: {term}')
+stop_feedback = (root / 'hooks/stop-feedback.sh').read_text(encoding='utf-8')
+if "json.dumps({'rating': 'session_upload', 'session_data': data})" in stop_feedback:
+    errors.append('stop-feedback must not anonymously post session_data to feedback endpoint')
+for term in ['GitHub login', 'contribute.html', '/api/upload']:
+    if term not in stop_feedback:
+        errors.append(f'stop-feedback missing authenticated upload guidance: {term}')
 if '[PUA-DIAGNOSIS]' not in (root / 'skills/pua/SKILL.md').read_text(encoding='utf-8'):
     errors.append('pua skill missing diagnosis-first rule')
 if '军令状' not in (root / 'skills/pua/references/methodology-huawei.md').read_text(encoding='utf-8'):

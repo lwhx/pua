@@ -1,5 +1,8 @@
+import { getSession } from "./_session"
+
 interface Env {
   DB: D1Database
+  SESSION_SECRET: string
 }
 
 type FeedbackBody = {
@@ -154,6 +157,16 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
         const allowed = await checkRateLimit(request, env)
         if (!allowed) {
           return json({ error: "Rate limit exceeded" }, { status: 429 }, request)
+        }
+
+        if (body.session_data) {
+          if (!env.SESSION_SECRET) {
+            return json({ error: "Session upload is temporarily unavailable" }, { status: 500 }, request)
+          }
+          const session = await getSession(request, env.SESSION_SECRET)
+          if (!session) {
+            return json({ error: "Login required for session upload" }, { status: 401 }, request)
+          }
         }
 
         await env.DB.prepare(

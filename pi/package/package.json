@@ -1,0 +1,43 @@
+{
+  "name": "@tanweai/pi-pua",
+  "version": "3.4.0",
+  "description": "PUA high-agency governance extension and skill pack for the Pi coding agent.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/tanweai/pua",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanweai/pua.git",
+    "directory": "pi/package"
+  },
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi-skill",
+    "agent-skill",
+    "pua",
+    "high-agency",
+    "verification",
+    "governance"
+  ],
+  "files": [
+    "extensions",
+    "skills",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/pua/index.ts"
+    ],
+    "skills": [
+      "./skills"
+    ],
+    "image": "https://raw.githubusercontent.com/tanweai/pua/main/assets/pua-skill-logo.svg"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

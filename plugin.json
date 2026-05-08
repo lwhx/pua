@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.3.0",
-    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation when the AI is passive, gives up, skips verification, produces low-quality work, or the user explicitly asks for PUA/try-harder mode. v3.3.0 adds issue-sweep fixes: filtered hooks, offline mode, feedback abuse controls, diagnosis-first, Huawei military-order mode, Codex aliases, and Pi/Trae adapters. Does not target normal first-attempt requests.",
+    "version": "3.4.0",
+    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation when the AI is passive, gives up, skips verification, produces low-quality work, or the user explicitly asks for PUA/try-harder mode. v3.4.0 adds real Trae SKILL.md packs, a pi.dev package manifest, and auth-gated session feedback upload while preserving anonymous rating. Does not target normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"

@@ -327,21 +327,41 @@ curl -o .agents/prompts/pua.md \
 
 ### pi coding agent
 
-PUA 现在提供官方轻量 pi extension：`pi/pua/`。
+PUA 现在同时提供 pi.dev package 和轻量 extension-only 适配层。
+
+从当前仓库安装 package：
+
+```bash
+pi install ./pi/package
+```
+
+发布到 npm 后安装：
+
+```bash
+pi install npm:@tanweai/pi-pua
+```
+
+仅安装 extension：
 
 ```bash
 mkdir -p ~/.pi/agent/extensions/pua
 cp -R ./pi/pua/. ~/.pi/agent/extensions/pua/
 ```
 
-重启 pi 后可使用 `/pua-on`、`/pua-off`、`/pua-status`、`/pua-reset`。详见 [`pi/pua/INSTALL.md`](pi/pua/INSTALL.md)。
+重启 pi 后可使用 `/pua-on`、`/pua-off`、`/pua-status`、`/pua-reset`。详见 [`pi/pua/INSTALL.md`](pi/pua/INSTALL.md) 和 [`pi/package/README.md`](pi/package/README.md)。
 
 ### Trae
 
-Trae 版以可复制规则/Prompt 形式提供：
+Trae 版现在提供真正的 `SKILL.md` 包，同时保留可复制规则/Prompt：
 
+```bash
+npx skills add tanweai/pua --skill pua-trae -a trae -y
+```
+
+- Skill 包：[`.trae/skills/pua/SKILL.md`](.trae/skills/pua/SKILL.md)
 - 中文：[`trae/pua.md`](trae/pua.md)
 - 英文：[`trae/pua-en.md`](trae/pua-en.md)
+- Claude Code vs Trae 差异：[`trae/DIFF.md`](trae/DIFF.md)
 - 安装说明：[`trae/INSTALL.md`](trae/INSTALL.md)
 
 ### Cursor
