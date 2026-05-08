@@ -8,8 +8,8 @@
     "plugins": [
         {
             "name": "pua",
-            "description": "PUA 我们不养闲 Agent — 11 modular skills, 13 corporate flavors, L0-L4 pressure, auto-iteration loop, ENFP yes-mode, Chinese-mom nagging mode, concentrated shot mode, agent lifecycle teardown protocol, feedback system. v3.2: SubagentStop hook + 3 ops commands.",
-            "version": "3.2.3",
+            "description": "PUA 我们不养闲 Agent — 11 modular skills, 13 corporate flavors, L0-L4 pressure, auto-iteration loop, ENFP yes-mode, Chinese-mom nagging mode, concentrated shot mode, agent lifecycle teardown protocol, feedback system. v3.2.4: confidence loop gate before delivery.",
+            "version": "3.2.4",
             "source": "./",
             "author": {
                 "name": "探微安全实验室",

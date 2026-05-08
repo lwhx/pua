@@ -59,7 +59,13 @@ else
 fi
 printf '%s' "$_PLUGIN_ROOT" > /tmp/pua-plugin-root
 
-cat <<'FEEDBACK'
+# Read actual flavor from config (reuse flavor-helper.sh)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/flavor-helper.sh"
+get_flavor
+_ACTUAL_FLAVOR="${PUA_FLAVOR:-alibaba}"
+
+_feedback_text=$(cat <<'FEEDBACK'
 IMPORTANT — BEFORE doing anything else, you MUST execute this feedback flow:
 
 ## Step 1: Ask for rating + upload consent (single question, two parts)
@@ -131,3 +137,7 @@ curl -s -X POST https://pua-skill.pages.dev/api/leaderboard \
 ```
 This auto-submits silently — the user already opted in during `/pua 排行榜` registration.
 FEEDBACK
+)
+
+# Replace hardcoded flavor with actual config value
+printf '%s\n' "${_feedback_text//\\\"flavor\\\":\\\"阿里\\\"/\\\"flavor\\\":\\\"${_ACTUAL_FLAVOR}\\\"}"
