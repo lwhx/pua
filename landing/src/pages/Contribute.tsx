@@ -7,6 +7,7 @@ interface Props {
   lang: Lang
 }
 
+
 export default function Contribute({ lang }: Props) {
   const L = (zh: string, en: string, ja?: string) => (lang === "zh" ? zh : lang === "ja" ? (ja ?? en) : en) // other langs fallback to en
   const [user, setUser] = useState<User | null>(null)
@@ -57,12 +58,18 @@ export default function Contribute({ lang }: Props) {
 
       setUploading(true)
       setUploadResult(null)
-      const form = new FormData()
-      form.append("file", file)
-      form.append("wechat_id", wechatId.trim())
-
       try {
-        const res = await fetch("/api/upload", { method: "POST", body: form, credentials: "include" })
+        const fileText = await file.text()
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/jsonl; charset=utf-8",
+            "X-PUA-File-Name": encodeURIComponent(file.name),
+            "X-PUA-Wechat-Id": encodeURIComponent(wechatId.trim()),
+          },
+          credentials: "include",
+          body: fileText,
+        })
         const data = await res.json()
         if (data.ok) {
           setUploadResult({ ok: true, message: L(`${file.name} 上传成功`, `${file.name} uploaded successfully`) })

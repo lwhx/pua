@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.4.3",
-    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure. Triggers on explicit PUA requests, user frustration, repeated failures, passive behavior, unverified completion, or quality complaints. v3.4.3 adds silent heartbeat telemetry and admin-only Cloudflare active-user stats without prompt leakage. Not for normal first-attempt requests.",
+    "version": "3.4.4",
+    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure. Triggers on explicit PUA requests, user frustration, repeated failures, passive behavior, unverified completion, or quality complaints. v3.4.4 fixes contribution upload routing and switches the browser uploader to JSON file_data. Not for normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
@@ -27,6 +27,9 @@
         "chinese-mom",
         "heartbeat",
         "cloudflare",
-        "active-users"
+        "active-users",
+        "upload",
+        "contribute",
+        "jsonl"
     ]
 }

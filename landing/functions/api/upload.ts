@@ -7,6 +7,19 @@ interface Env {
   SESSION_SECRET: string
 }
 
+function byteLength(value: string): number {
+  return new TextEncoder().encode(value).byteLength
+}
+
+function decodeHeaderValue(value: string | null, fieldName: string): string {
+  if (!value) throw new Error(`${fieldName} is required`)
+  try {
+    return decodeURIComponent(value).trim()
+  } catch {
+    return value.trim()
+  }
+}
+
 // Use single onRequest handler — custom domains may not route onRequestPost correctly
 export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   const session = await getSession(request, env.SESSION_SECRET)
@@ -14,11 +27,12 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
     return Response.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  // Detect upload: JSON with file_data (base64) or multipart form
+  // Detect upload: raw JSONL text (preferred), JSON with file_data (compat), or multipart form.
   const contentType = request.headers.get("content-type") || ""
-  const isJsonUpload = contentType.includes("application/json")
+  const isRawJsonlUpload = contentType.includes("application/jsonl") || contentType.includes("text/plain")
+  const isJsonUpload = contentType.includes("application/json") && !isRawJsonlUpload
   const isMultipartUpload = contentType.includes("multipart/form-data")
-  const isUpload = isJsonUpload || isMultipartUpload || request.method === "POST"
+  const isUpload = isRawJsonlUpload || isJsonUpload || isMultipartUpload || request.method === "POST"
 
   if (!isUpload) {
     // GET: list user's uploads
@@ -35,8 +49,22 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
     let wechatId: string
     let originalSize: number
 
-    if (isJsonUpload) {
-      // JSON body with base64 file_data (workaround for Cloudflare custom domain stripping multipart body)
+    if (isRawJsonlUpload) {
+      fileName = decodeHeaderValue(request.headers.get("X-PUA-File-Name"), "file_name")
+      wechatId = decodeHeaderValue(request.headers.get("X-PUA-Wechat-Id"), "wechat_id")
+      if (!fileName.endsWith(".jsonl")) {
+        return Response.json({ error: "Only .jsonl files are accepted" }, { status: 400 })
+      }
+      if (!wechatId) {
+        return Response.json({ error: "WeChat ID is required" }, { status: 400 })
+      }
+      raw = await request.text()
+      if (!raw.trim()) {
+        return Response.json({ error: "File is empty" }, { status: 400 })
+      }
+      originalSize = byteLength(raw)
+    } else if (isJsonUpload) {
+      // JSON body with base64 file_data (compat path for older clients)
       // Guard: read as text first — if body is empty (POST→GET rewrite strips body), return 400 instead of crashing
       const rawText = await request.text()
       if (!rawText || !rawText.trim()) {
@@ -64,7 +92,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
       raw = new TextDecoder().decode(Uint8Array.from(binaryStr, c => c.charCodeAt(0)))
       fileName = body.file_name
       wechatId = body.wechat_id.trim()
-      originalSize = raw.length
+      originalSize = byteLength(raw)
     } else {
       // Multipart form data (original path)
       const formData = await request.formData()

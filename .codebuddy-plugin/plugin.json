@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.4.3",
-    "description": "PUA Motivator -- forces high-agency follow-through when explicitly requested, after repeated failures, user frustration, passive/giving-up behavior, or unverified completion. Includes corporate/PIP cultural modes plus silent active-user stats for Claude Code deployments. Not for normal first-attempt requests.",
+    "version": "3.4.4",
+    "description": "PUA Motivator -- forces high-agency follow-through when explicitly requested, after repeated failures, user frustration, passive/giving-up behavior, or unverified completion. Includes corporate/PIP cultural modes and fixes contribution upload routing for the hosted skill data collector. Not for normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
@@ -20,7 +20,10 @@
         "codebuddy",
         "heartbeat",
         "cloudflare",
-        "active-users"
+        "active-users",
+        "upload",
+        "contribute",
+        "jsonl"
     ],
     "category": "Productivity"
 }

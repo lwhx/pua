@@ -299,18 +299,22 @@ function InstallTabs({ L }: { L: (value: Record<Lang, string>) => string }) {
 }
 
 /* ── App ── */
-function useHashRoute() {
-  const [hash, setHash] = useState(window.location.hash)
+function useClientRoute() {
+  const [route, setRoute] = useState(() => ({ hash: window.location.hash, pathname: window.location.pathname }))
   useEffect(() => {
-    const onHash = () => setHash(window.location.hash)
-    window.addEventListener("hashchange", onHash)
-    return () => window.removeEventListener("hashchange", onHash)
+    const update = () => setRoute({ hash: window.location.hash, pathname: window.location.pathname })
+    window.addEventListener("hashchange", update)
+    window.addEventListener("popstate", update)
+    return () => {
+      window.removeEventListener("hashchange", update)
+      window.removeEventListener("popstate", update)
+    }
   }, [])
-  return hash
+  return route
 }
 
 export default function App() {
-  const hash = useHashRoute()
+  const { hash, pathname } = useClientRoute()
   const [lang, setLang] = useState<Lang>("en")
   const [activeTab, setActiveTab] = useState("Alibaba")
   const [navScrolled, setNavScrolled] = useState(false)
@@ -321,7 +325,7 @@ export default function App() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  if (hash === "#/contribute") {
+  if (hash === "#/contribute" || pathname === "/contribute.html" || pathname === "/contribute") {
     return <Contribute lang={lang} />
   }
   if (hash === "#/admin/heartbeats") {

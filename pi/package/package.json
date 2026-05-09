@@ -1,6 +1,6 @@
 {
   "name": "@tanweai/pi-pua",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "description": "PUA high-agency governance extension and skill pack for the Pi coding agent.",
   "type": "module",
   "license": "MIT",

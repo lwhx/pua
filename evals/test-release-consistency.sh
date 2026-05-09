@@ -129,6 +129,7 @@ required_paths = [
     'evals/test-feedback-auth.sh',
     'evals/test-microsoft-flavor.sh',
     'evals/test-heartbeat.sh',
+    'evals/test-upload-flow.sh',
     'hooks/heartbeat.sh',
     'landing/functions/api/heartbeat.ts',
     'landing/migrations/0004_heartbeat.sql',
@@ -195,6 +196,18 @@ heartbeat_api = (root / 'landing/functions/api/heartbeat.ts').read_text(encoding
 for term in ['ADMIN_GITHUB_LOGINS', 'getSession(request, env.SESSION_SECRET)', 'heartbeat_installs', 'heartbeat_events', 'COUNT(DISTINCT install_id_hash)', 'sha256Hex']:
     if term not in heartbeat_api:
         errors.append(f'heartbeat endpoint missing required term: {term}')
+
+app_tsx = (root / 'landing/src/App.tsx').read_text(encoding='utf-8')
+contribute_tsx = (root / 'landing/src/pages/Contribute.tsx').read_text(encoding='utf-8')
+for term in ['pathname', '/contribute.html', '#/contribute']:
+    if term not in app_tsx:
+        errors.append(f'upload flow missing required term in App.tsx: {term}')
+for term in ['file.text()', 'application/jsonl', 'X-PUA-File-Name', 'X-PUA-Wechat-Id']:
+    if term not in contribute_tsx:
+        errors.append(f'upload flow missing required term in Contribute.tsx: {term}')
+for forbidden_upload_term in ['new FormData()', 'readFileAsBase64', 'file_data: fileData']:
+    if forbidden_upload_term in contribute_tsx:
+        errors.append(f'upload flow must not rely on bloated/multipart browser upload path: {forbidden_upload_term}')
 
 for forbidden in ['Applies to ALL task types', 'All task types', 'code, config, debug, deploy, research']:
     if forbidden in skill.split('---', 2)[1]:
