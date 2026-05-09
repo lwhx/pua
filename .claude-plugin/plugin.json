@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.4.2",
-    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure. Triggers on explicit PUA requests, user frustration, repeated failures, passive behavior, unverified completion, or quality complaints. v3.4.2 restores authentic Microsoft flavor: Connects, Impact Descriptors, SLITE/LITE, PIP/GVSA, and Three Circles of Impact. Not for normal first-attempt requests.",
+    "version": "3.4.3",
+    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure. Triggers on explicit PUA requests, user frustration, repeated failures, passive behavior, unverified completion, or quality complaints. v3.4.3 adds silent heartbeat telemetry and admin-only Cloudflare active-user stats without prompt leakage. Not for normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
@@ -24,6 +24,9 @@
         "owner-consciousness",
         "methodology",
         "mama-mode",
-        "chinese-mom"
+        "chinese-mom",
+        "heartbeat",
+        "cloudflare",
+        "active-users"
     ]
 }

@@ -16,6 +16,7 @@ import {
   NumberTicker,
 } from "./components/motion-primitives"
 import Contribute from "./pages/Contribute"
+import AdminStats from "./pages/AdminStats"
 import {
   type Lang,
   LANG_LABELS,
@@ -322,6 +323,9 @@ export default function App() {
 
   if (hash === "#/contribute") {
     return <Contribute lang={lang} />
+  }
+  if (hash === "#/admin/heartbeats") {
+    return <AdminStats lang={lang} />
   }
   const L = (o: Record<Lang, string>) => o[lang]
   const activeBenchmark = BENCHMARKS.find((benchmark) => benchmark.name === activeTab) ?? BENCHMARKS[0]

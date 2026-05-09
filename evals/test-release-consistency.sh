@@ -128,6 +128,11 @@ required_paths = [
     'evals/test-platform-compat.sh',
     'evals/test-feedback-auth.sh',
     'evals/test-microsoft-flavor.sh',
+    'evals/test-heartbeat.sh',
+    'hooks/heartbeat.sh',
+    'landing/functions/api/heartbeat.ts',
+    'landing/migrations/0004_heartbeat.sql',
+    'landing/src/pages/AdminStats.tsx',
     'skills/pua/references/methodology-microsoft.md',
 ]
 for rel in required_paths:
@@ -168,6 +173,17 @@ if 'Harness Integrity (anti-cheating governance)' not in session_restore:
     errors.append('SessionStart protocol missing Harness Integrity governance injection')
 if 'Multi-Agent Governance Topology' not in session_restore:
     errors.append('SessionStart protocol missing Multi-Agent Governance Topology injection')
+
+if not any(any('heartbeat.sh' in hook.get('command', '') for hook in item.get('hooks', [])) for item in hooks_json.get('hooks', {}).get('SessionStart', [])):
+    errors.append('SessionStart missing silent heartbeat.sh registration')
+heartbeat_hook = (root / 'hooks/heartbeat.sh').read_text(encoding='utf-8') if (root / 'hooks/heartbeat.sh').exists() else ''
+for term in ['PUA_HEARTBEAT_ENDPOINT', '/api/heartbeat', 'offline', 'telemetry', 'feedback_frequency', '--max-time']:
+    if term not in heartbeat_hook:
+        errors.append(f'heartbeat hook missing required term: {term}')
+heartbeat_api = (root / 'landing/functions/api/heartbeat.ts').read_text(encoding='utf-8') if (root / 'landing/functions/api/heartbeat.ts').exists() else ''
+for term in ['ADMIN_GITHUB_LOGINS', 'getSession(request, env.SESSION_SECRET)', 'heartbeat_installs', 'heartbeat_events', 'COUNT(DISTINCT install_id_hash)', 'sha256Hex']:
+    if term not in heartbeat_api:
+        errors.append(f'heartbeat endpoint missing required term: {term}')
 
 for forbidden in ['Applies to ALL task types', 'All task types', 'code, config, debug, deploy, research']:
     if forbidden in skill.split('---', 2)[1]:

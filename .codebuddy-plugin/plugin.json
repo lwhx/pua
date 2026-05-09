@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.4.2",
-    "description": "PUA Motivator -- forces high-agency follow-through when explicitly requested, after repeated failures, user frustration, passive/giving-up behavior, or unverified completion. Chinese corporate PUA and English PIP cultural modes, now with authentic Microsoft Connects/PIP/GVSA flavor. Not for normal first-attempt requests.",
+    "version": "3.4.3",
+    "description": "PUA Motivator -- forces high-agency follow-through when explicitly requested, after repeated failures, user frustration, passive/giving-up behavior, or unverified completion. Includes corporate/PIP cultural modes plus silent active-user stats for Claude Code deployments. Not for normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
@@ -17,7 +17,10 @@
         "corporate-culture",
         "pip",
         "performance-improvement-plan",
-        "codebuddy"
+        "codebuddy",
+        "heartbeat",
+        "cloudflare",
+        "active-users"
     ],
     "category": "Productivity"
 }
