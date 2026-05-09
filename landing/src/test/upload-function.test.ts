@@ -23,7 +23,18 @@ function createMockEnv(secret: string) {
       SESSION_SECRET: secret,
       DB: {
         prepare(sql: string) {
-          return {
+          const statement = {
+            async run() {
+              dbWrites.push({ sql, args: [] })
+              return { success: true }
+            },
+            async all() {
+              return { results: [] }
+            },
+            async first() {
+              if (sql.includes("upload_rate_limits")) return { count: 1 }
+              return null
+            },
             bind(...args: unknown[]) {
               return {
                 async run() {
@@ -34,11 +45,13 @@ function createMockEnv(secret: string) {
                   return { results: [] }
                 },
                 async first() {
+                  if (sql.includes("upload_rate_limits")) return { count: 1 }
                   return null
                 },
               }
             },
           }
+          return statement
         },
       },
       UPLOADS: {
@@ -113,4 +126,49 @@ describe("upload API", () => {
     const response = await onRequest({ request, env } as any)
     await expectSuccessfulUpload(response, dbWrites, r2Writes)
   })
+
+  it("accepts anonymous raw JSONL uploads after explicit consent", async () => {
+    const secret = "test-session-secret"
+    const rawJsonl = '{"content":"token sk-ant-123456789012345678901234567890 and user@example.com"}\n'
+    const { env, dbWrites, r2Writes } = createMockEnv(secret)
+    const request = new Request("https://openpua.ai/api/upload", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/jsonl; charset=utf-8",
+        "X-PUA-File-Name": encodeURIComponent("session.jsonl"),
+        "X-PUA-Wechat-Id": encodeURIComponent("not-provided"),
+        "X-PUA-Upload-Consent": "explicit",
+      },
+      body: rawJsonl,
+    })
+
+    const response = await onRequest({ request, env } as any)
+    const body = await response.json() as { ok?: boolean; error?: string; file_name?: string }
+
+    expect(response.status).toBe(200)
+    expect(body).toMatchObject({ ok: true, file_name: "session.jsonl" })
+    expect(r2Writes).toHaveLength(1)
+    expect(r2Writes[0].key).toMatch(/^anonymous\/\d+-session\.jsonl$/)
+    expect(r2Writes[0].value).toContain("[API_KEY]")
+    expect(r2Writes[0].value).toContain("[EMAIL]")
+    expect(dbWrites.some((write) => write.sql.includes("INSERT INTO uploads"))).toBe(true)
+  })
+
+  it("rejects anonymous upload without explicit consent", async () => {
+    const secret = "test-session-secret"
+    const { env } = createMockEnv(secret)
+    const request = new Request("https://openpua.ai/api/upload", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/jsonl; charset=utf-8",
+        "X-PUA-File-Name": encodeURIComponent("session.jsonl"),
+        "X-PUA-Wechat-Id": encodeURIComponent("not-provided"),
+      },
+      body: '{"content":"hello"}\n',
+    })
+
+    const response = await onRequest({ request, env } as any)
+    expect(response.status).toBe(403)
+  })
+
 })

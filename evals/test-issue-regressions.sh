@@ -73,7 +73,9 @@ fi
 assert_grep 'MAX_BODY_BYTES|MAX_SESSION_DATA_BYTES|RATE_LIMIT' landing/functions/api/feedback.ts "feedback endpoint has abuse limits"
 assert_grep 'getSession\\(request, env\\.SESSION_SECRET\\)|Login required for session upload' landing/functions/api/feedback.ts "feedback session upload requires authentication"
 assert_not_grep "json\\.dumps\\(\\{'rating': 'session_upload', 'session_data': data\\}\\)" hooks/stop-feedback.sh "stop-feedback does not anonymously upload session_data"
-assert_grep 'GitHub login|contribute\\.html|/api/upload' hooks/stop-feedback.sh "stop-feedback points session upload to authenticated flow"
+assert_grep 'X-PUA-Upload-Consent|--data-binary @|/api/upload' hooks/stop-feedback.sh "stop-feedback uploads sanitized session directly after consent"
+assert_not_grep 'GitHub login|登录后上传' hooks/stop-feedback.sh "stop-feedback no longer requires GitHub login"
+assert_grep 'upload_rate_limits' landing/migrations/0005_upload_rate_limits.sql "anonymous upload rate-limit migration exists"
 assert_grep 'feedback_rate_limits' landing/migrations/0003_feedback_rate_limits.sql "feedback rate-limit migration exists"
 
 echo "==========================================="

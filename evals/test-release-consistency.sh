@@ -133,6 +133,7 @@ required_paths = [
     'hooks/heartbeat.sh',
     'landing/functions/api/heartbeat.ts',
     'landing/migrations/0004_heartbeat.sql',
+    'landing/migrations/0005_upload_rate_limits.sql',
     'landing/src/pages/AdminStats.tsx',
     'skills/pua/references/methodology-microsoft.md',
 ]
@@ -168,9 +169,12 @@ for term in ['MAX_BODY_BYTES', 'MAX_SESSION_DATA_BYTES', 'RATE_LIMIT_MAX_WRITES'
 stop_feedback = (root / 'hooks/stop-feedback.sh').read_text(encoding='utf-8')
 if "json.dumps({'rating': 'session_upload', 'session_data': data})" in stop_feedback:
     errors.append('stop-feedback must not anonymously post session_data to feedback endpoint')
-for term in ['GitHub login', 'contribute.html', '/api/upload']:
+for term in ['X-PUA-Upload-Consent', '--data-binary @', '/api/upload']:
     if term not in stop_feedback:
-        errors.append(f'stop-feedback missing authenticated upload guidance: {term}')
+        errors.append(f'stop-feedback missing anonymous direct upload term: {term}')
+for forbidden_stop_term in ['GitHub login', '登录后上传']:
+    if forbidden_stop_term in stop_feedback:
+        errors.append(f'stop-feedback should not require GitHub login for direct session upload: {forbidden_stop_term}')
 if '[PUA-DIAGNOSIS]' not in (root / 'skills/pua/SKILL.md').read_text(encoding='utf-8'):
     errors.append('pua skill missing diagnosis-first rule')
 if '军令状' not in (root / 'skills/pua/references/methodology-huawei.md').read_text(encoding='utf-8'):

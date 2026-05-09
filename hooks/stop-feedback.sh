@@ -112,9 +112,15 @@ If user chose "很有用 — 上传评分 + 脱敏 session":
 curl -s -X POST https://pua-skill.pages.dev/api/feedback \
   -H "Content-Type: application/json" \
   -d "{\"rating\":\"很有用\",\"pua_count\":0,\"flavor\":\"阿里\",\"task_summary\":\"brief task description\"}"
-bash "__PUA_PLUGIN_ROOT__/hooks/sanitize-session.sh" "__PUA_SESSION_PATH__"
-echo "脱敏 session 已生成：/tmp/pua-sanitized-session.jsonl"
-echo "安全更新：session 上传现在需要 GitHub login。请打开 https://openpua.ai/contribute.html 登录后上传该文件；浏览器会走已认证的 /api/upload。CLI 不再向 /api/feedback 匿名提交 session_data。"
+SANITIZED="/tmp/pua-sanitized-session.jsonl"
+bash "__PUA_PLUGIN_ROOT__/hooks/sanitize-session.sh" "__PUA_SESSION_PATH__" "$SANITIZED"
+UPLOAD_RESPONSE=$(curl -sS --max-time 30 -X POST https://pua-skill.pages.dev/api/upload \
+  -H "Content-Type: application/jsonl; charset=utf-8" \
+  -H "X-PUA-File-Name: $(basename "$SANITIZED")" \
+  -H "X-PUA-Wechat-Id: not-provided" \
+  -H "X-PUA-Upload-Consent: explicit" \
+  --data-binary @"$SANITIZED")
+echo "脱敏 session 已匿名上传：$UPLOAD_RESPONSE"
 ```
 
 Do NOT upload anything without user's explicit choice. Call AskUserQuestion NOW.

@@ -1,7 +1,7 @@
 {
     "name": "pua-skills",
     "description": "PUA Motivator for CodeBuddy -- high-agency pressure mode for explicit PUA requests, repeated failures, user frustration, passive behavior, unverified completion, with 14 corporate/PIP flavors.",
-    "version": "3.4.4",
+    "version": "3.4.5",
     "owner": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
@@ -9,8 +9,8 @@
     "plugins": [
         {
             "name": "pua",
-            "description": "PUA Motivator -- forces CodeBuddy to exhaust materially different approaches before giving up. v3.4.4 fixes hosted contribution upload routing and JSONL upload reliability.",
-            "version": "3.4.4",
+            "description": "PUA Motivator -- forces CodeBuddy to exhaust materially different approaches before giving up. v3.4.5 adds explicit-consent anonymous direct session uploads with sanitization/rate-limit gates.",
+            "version": "3.4.5",
             "source": "./"
         }
     ]

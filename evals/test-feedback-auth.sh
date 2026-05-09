@@ -18,8 +18,9 @@ assert_grep 'getSession\(request, env\.SESSION_SECRET\)' landing/functions/api/f
 assert_grep 'Login required for session upload|status: 401' landing/functions/api/feedback.ts "unauthenticated session upload returns 401"
 assert_grep 'INSERT INTO feedback' landing/functions/api/feedback.ts "anonymous rating insert path remains"
 assert_not_grep "json\.dumps\(\{'rating': 'session_upload', 'session_data': data\}\)" hooks/stop-feedback.sh "Stop hook no longer posts session_data to feedback anonymously"
-assert_grep 'GitHub login|登录|contribute\.html|/api/upload' hooks/stop-feedback.sh "Stop hook directs session uploads through authenticated flow"
+assert_grep 'X-PUA-Upload-Consent|--data-binary @|/api/upload' hooks/stop-feedback.sh "Stop hook directly uploads sanitized session after explicit consent"
 assert_grep '仅上传评分' hooks/stop-feedback.sh "anonymous score-only feedback remains available"
+assert_not_grep 'GitHub login|登录后上传' hooks/stop-feedback.sh "Stop hook no longer requires GitHub login for session upload"
 
 echo "==========================="
 echo "Passed: $PASS"
