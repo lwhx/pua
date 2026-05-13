@@ -8,8 +8,8 @@
     "plugins": [
         {
             "name": "pua",
-            "description": "PUA 我们不养闲 Agent — 11 modular skills, 14 corporate flavors, L0-L4 pressure, auto-iteration loop, ENFP yes-mode, Chinese-mom nagging mode, concentrated shot mode, agent lifecycle teardown protocol, feedback system. v3.4.5: explicit-consent anonymous direct session uploads from the skill, with local sanitization and upload rate limits.",
-            "version": "3.4.5",
+            "description": "PUA 我们不养闲 Agent — 11 modular skills, 14 corporate flavors, L0-L4 pressure, auto-iteration loop, ENFP yes-mode, Chinese-mom nagging mode, concentrated shot mode, agent lifecycle teardown protocol, feedback system. v3.4.6: integrity guard no longer emits permissionDecision=ask for advisory risks; hidden solutions and benchmark-answer contamination remain hard denied.",
+            "version": "3.4.6",
             "source": "./",
             "author": {
                 "name": "探微安全实验室",

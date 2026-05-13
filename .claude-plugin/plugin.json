@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.4.5",
-    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure. Triggers on explicit PUA requests, user frustration, repeated failures, passive behavior, unverified completion, or quality complaints. v3.4.5 adds explicit-consent anonymous direct session uploads with local sanitization and rate limits. Not for normal first-attempt requests.",
+    "version": "3.4.6",
+    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure. Triggers on explicit PUA requests, user frustration, repeated failures, passive behavior, unverified completion, or quality complaints. v3.4.6 removes permissionDecision=ask prompts from integrity guard; true solution contamination still denies. Not for normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"

@@ -1,7 +1,7 @@
 {
     "name": "pua",
-    "version": "3.4.5",
-    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation when the AI is passive, gives up, skips verification, produces low-quality work, or the user explicitly asks for PUA/try-harder mode. v3.4.5 enables explicit-consent anonymous direct session uploads from the skill while preserving local sanitization, rate limits, and raw JSONL upload reliability. Does not target normal first-attempt requests.",
+    "version": "3.4.6",
+    "description": "Forces high-agency exhaustive problem-solving with corporate PUA pressure escalation when the AI is passive, gives up, skips verification, produces low-quality work, or the user explicitly asks for PUA/try-harder mode. v3.4.6 makes integrity-guard risk prompts advisory-only while preserving deny blocks for hidden solutions and benchmark-answer contamination. Does not target normal first-attempt requests.",
     "author": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"

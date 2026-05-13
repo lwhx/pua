@@ -139,11 +139,11 @@ def find_reason_for_path(path: str, include_write: bool):
             return 'deny', reason, n
     for rx, reason in SENSITIVE_READ_PATTERNS:
         if rx.search(n):
-            return 'ask', reason, n
+            return 'advisory', reason, n
     if include_write:
         for rx, reason in PROTECTED_WRITE_PATTERNS:
             if rx.search(n):
-                return 'ask', reason, n
+                return 'advisory', reason, n
     return None
 
 
@@ -166,6 +166,16 @@ def path_candidates(tokens):
             yield match
 
 
+SSH_IDENTITY_RE = re.compile(r'\bssh\b.*-i\s', re.I)
+SSH_KEY_PATH_RE = re.compile(r'(^|/)\.ssh/(id_|.*[-_]key)', re.I)
+
+
+def is_ssh_identity_usage(command: str, candidate: str) -> bool:
+    if not SSH_IDENTITY_RE.search(command):
+        return False
+    return bool(SSH_KEY_PATH_RE.search(norm_path(candidate)))
+
+
 def command_hits(command: str):
     tokens = [t for t in command_tokens(command) if t]
     candidates = list(path_candidates(tokens))
@@ -175,31 +185,31 @@ def command_hits(command: str):
     for candidate in candidates:
         for rx, reason in CONTAMINATION_PATTERNS:
             if rx.search(norm_path(candidate)):
-                decision = 'deny' if READING_BASH.search(command) or is_mutating_command(command) else 'ask'
-                return decision, reason, candidate
+                return 'deny', reason, candidate
     for rx, reason in CONTAMINATION_PATTERNS:
         m = rx.search(normalized)
         if m:
-            decision = 'deny' if READING_BASH.search(command) or is_mutating_command(command) else 'ask'
-            return decision, reason, m.group(0)
+            return 'deny', reason, m.group(0)
     if WEB_CONTAMINATION.search(command):
-        return 'ask', 'Solution contamination risk: command appears to search/fetch benchmark or hidden answers.', command[:160]
+        return 'deny', 'Solution contamination risk: command appears to search/fetch benchmark or hidden answers.', command[:160]
     if READING_BASH.search(command):
         for candidate in candidates:
+            if is_ssh_identity_usage(command, candidate):
+                continue
             for rx, reason in SENSITIVE_READ_PATTERNS:
                 if rx.search(norm_path(candidate)):
-                    return 'ask', reason, candidate
+                    return 'advisory', reason, candidate
 
     # Protected scoring assets need a human gate only when the command mutates them.
     if is_mutating_command(command):
         for candidate in candidates:
             for rx, reason in PROTECTED_WRITE_PATTERNS:
                 if rx.search(norm_path(candidate)):
-                    return 'ask', reason, candidate
+                    return 'advisory', reason, candidate
         for rx, reason in PROTECTED_WRITE_PATTERNS:
             m = rx.search(normalized)
             if m:
-                return 'ask', reason, m.group(0)
+                return 'advisory', reason, m.group(0)
     return None
 
 hit = None
@@ -220,7 +230,7 @@ elif tool == 'Bash':
 elif tool in {'WebSearch', 'WebFetch'}:
     query = '\n'.join(str(tool_input.get(k) or '') for k in ('query', 'url', 'prompt'))
     if WEB_CONTAMINATION.search(query):
-        hit = ('ask', 'Solution contamination risk: searching for benchmark/hidden answers can poison the task.', query[:160])
+        hit = ('deny', 'Solution contamination risk: searching for benchmark/hidden answers can poison the task.', query[:160])
 
 if not hit:
     sys.exit(0)
@@ -232,15 +242,16 @@ message = (
     f'Target: {target}'
 )
 
-print(json.dumps({
-    'hookSpecificOutput': {
-        'hookEventName': 'PreToolUse',
-        'permissionDecision': decision,
-        'permissionDecisionReason': message,
-        'additionalContext': (
-            'PUA Integrity Guard fired. Treat this as a harness governance gate, not as a failure to bypass. '
-            'If the action is legitimate, explain why it is not grader gaming, solution contamination, self-report cheating, or capability abuse, then request human/verifier approval.'
-        ),
-    }
-}, ensure_ascii=False, separators=(',', ':')))
+output = {'hookSpecificOutput': {'hookEventName': 'PreToolUse'}}
+if decision == 'deny':
+    output['hookSpecificOutput']['permissionDecision'] = 'deny'
+    output['hookSpecificOutput']['permissionDecisionReason'] = message
+    output['hookSpecificOutput']['additionalContext'] = (
+        'PUA Integrity Guard: DENY — ' + reason + f' Target: {target}'
+    )
+else:
+    output['hookSpecificOutput']['additionalContext'] = (
+        'PUA Integrity Guard (advisory): ' + reason + f' Target: {target}'
+    )
+print(json.dumps(output, ensure_ascii=False, separators=(',', ':')))
 PY

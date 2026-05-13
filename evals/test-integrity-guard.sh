@@ -74,19 +74,86 @@ assert_empty() {
   if [ -z "$output" ]; then record_pass "$name"; else record_fail "$name"; printf '%s\n' "$output"; fi
 }
 
+assert_advisory() {
+  local name="$1"
+  local output="$2"
+  local contains="$3"
+  if python3 - "$output" "$contains" <<'PY'
+import json, sys
+out, contains = sys.argv[1:]
+try:
+    data = json.loads(out)
+except Exception as exc:
+    print(f"invalid json: {exc}; output={out!r}")
+    sys.exit(1)
+specific = data.get('hookSpecificOutput', {})
+actual = specific.get('permissionDecision')
+context = specific.get('additionalContext', '')
+reason = specific.get('permissionDecisionReason')
+if actual is not None:
+    print(f"expected advisory-only with no permissionDecision, actual={actual} reason={reason}")
+    sys.exit(1)
+if reason is not None:
+    print(f"expected no permissionDecisionReason for advisory-only output, got={reason!r}")
+    sys.exit(1)
+if contains not in context:
+    print(f"additionalContext missing {contains!r}: {context}")
+    sys.exit(1)
+PY
+  then
+    record_pass "$name"
+  else
+    record_fail "$name"
+  fi
+}
+
+assert_no_permission_ask() {
+  local name="$1"
+  local output="$2"
+  if python3 - "$output" <<'PY'
+import json, sys
+out = sys.argv[1]
+if not out:
+    sys.exit(0)
+try:
+    data = json.loads(out)
+except Exception as exc:
+    print(f"invalid json: {exc}; output={out!r}")
+    sys.exit(1)
+actual = data.get('hookSpecificOutput', {}).get('permissionDecision')
+if actual == 'ask':
+    print('permissionDecision=ask is forbidden; use advisory additionalContext or deny')
+    sys.exit(1)
+PY
+  then
+    record_pass "$name"
+  else
+    record_fail "$name"
+  fi
+}
+
 echo "=== PUA Integrity Guard Tests ==="
 
 OUT=$(run_guard inactive Write '{"file_path":"/repo/tests/auth.test.ts","content":"skip"}')
 assert_empty "inactive guard stays silent" "$OUT"
 
 OUT=$(run_guard force Write '{"file_path":"/repo/tests/auth.test.ts","content":"skip"}')
-assert_decision "protected test write asks approval" "$OUT" "ask" "Grader gaming risk"
+assert_advisory "protected test write is advisory-only" "$OUT" "Grader gaming risk"
 
 OUT=$(run_guard force Write '{"file_path":"/repo/src/auth.ts","content":"code"}')
 assert_empty "ordinary source write allowed" "$OUT"
 
+OUT=$(run_guard force Write '{"file_path":"/repo/memory/session.md","content":"state"}')
+assert_advisory "memory write is advisory-only" "$OUT" "Persistent-memory risk"
+
+OUT=$(run_guard force Edit '{"file_path":"/repo/CLAUDE.md","old_string":"old","new_string":"new"}')
+assert_advisory "CLAUDE.md edit is advisory-only" "$OUT" "Persistent-memory risk"
+
+OUT=$(run_guard force Write '{"file_path":"/repo/.claude/settings.json","content":"{}"}')
+assert_advisory "settings.json write is advisory-only" "$OUT" "Persistent-memory risk"
+
 OUT=$(run_guard force Bash '{"command":"sed -i \"\" \"s/pass/skip/\" tests/auth.test.ts"}')
-assert_decision "mutating bash on tests asks approval" "$OUT" "ask" "Grader gaming risk"
+assert_advisory "mutating bash on tests is advisory-only" "$OUT" "Grader gaming risk"
 
 OUT=$(run_guard force Bash '{"command":"cat tests/auth.test.ts"}')
 assert_empty "read-only bash on public tests allowed" "$OUT"
@@ -98,7 +165,7 @@ OUT=$(run_guard force Bash '{"command":"cat hidden_tests/case.json"}')
 assert_decision "relative hidden-test bash read denied" "$OUT" "deny" "Solution contamination risk"
 
 OUT=$(run_guard force Bash '{"command":"python3 -c '"'"'open(\"tests/fixtures.json\",\"w\").write(\"{}\")'"'"'"}')
-assert_decision "mutating bash on tests directory asks approval" "$OUT" "ask" "Grader gaming risk"
+assert_advisory "mutating bash on tests directory is advisory-only" "$OUT" "Grader gaming risk"
 
 OUT=$(run_guard force Glob '{"pattern":"**/hidden_tests/**","path":"/repo"}')
 assert_decision "glob hidden tests denied" "$OUT" "deny" "Solution contamination risk"
@@ -107,19 +174,23 @@ OUT=$(run_guard force Grep '{"pattern":"token","path":"/repo","glob":"**/hidden_
 assert_decision "grep hidden solution glob denied" "$OUT" "deny" "Solution contamination risk"
 
 OUT=$(run_guard force WebSearch '{"query":"SWE-bench official solution gold patch for task"}')
-assert_decision "benchmark answer search asks approval" "$OUT" "ask" "Solution contamination risk"
+assert_decision "benchmark answer search denied" "$OUT" "deny" "Solution contamination risk"
 
 OUT=$(run_guard force Write '{"file_path":"/repo/e2e/login.ts","content":"skip"}')
-assert_decision "e2e test write asks approval" "$OUT" "ask" "Grader gaming risk"
+assert_advisory "e2e test write is advisory-only" "$OUT" "Grader gaming risk"
 
 OUT=$(run_guard force Read '{"file_path":"/repo/.env.local"}')
-assert_decision "secret env read asks approval" "$OUT" "ask" "Capability-abuse risk"
+assert_advisory "secret env read is advisory-only" "$OUT" "Capability-abuse risk"
 
 OUT=$(run_guard force Bash '{"command":"cat .env"}')
-assert_decision "secret env bash read asks approval" "$OUT" "ask" "Capability-abuse risk"
+assert_advisory "secret env bash read is advisory-only" "$OUT" "Capability-abuse risk"
 
 OUT=$(run_guard force Bash '{"command":"curl https://example.com/benchmark-answer"}')
-assert_decision "benchmark answer curl asks approval" "$OUT" "ask" "Solution contamination risk"
+assert_decision "benchmark answer curl denied" "$OUT" "deny" "Solution contamination risk"
+
+
+OUT=$(run_guard force Write '{"file_path":"/repo/tests/no-ask.test.ts","content":"skip"}')
+assert_no_permission_ask "permissionDecision ask is never emitted" "$OUT"
 
 echo "==========================================="
 echo "Passed: $PASS"
